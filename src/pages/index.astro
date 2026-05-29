@@ -1,0 +1,131 @@
+---
+import MkcLayout from '../layouts/MkcLayout.astro';
+---
+
+<MkcLayout title="Matenano Kings Cup | Chi sarà il nuovo re?">
+  
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    
+    <div class="absolute inset-0 z-0">
+      <img src="/assets/mkc.jpeg" alt="Matenano Kings Cup Background" class="w-full h-full object-cover opacity-30 filter blur-xl scale-110" onerror="this.style.display='none'" />
+      
+      <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-zinc-950/80 to-black"></div>
+    </div>
+
+    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+      <div class="w-[500px] h-[500px] bg-amber-500/[0.06] rounded-full filter blur-[120px] animate-pulse"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
+    </div>
+
+    <div class="relative z-10 max-w-5xl mx-auto px-4 text-center flex flex-col items-center">
+      
+      <div class="mb-10 relative group animate-emerge">
+        <div class="absolute -inset-4 bg-amber-500/20 blur-2xl rounded-full group-hover:bg-amber-500/30 transition-colors duration-700 z-0"></div>
+        
+        <div class="relative z-10 p-[2px] rounded-[2rem] bg-gradient-to-br from-amber-400/60 via-amber-600/10 to-transparent shadow-[0_0_40px_rgba(251,191,36,0.15)] group-hover:shadow-[0_0_60px_rgba(251,191,36,0.25)] transition-all duration-700 transform group-hover:-translate-y-2">
+          
+          <div class="bg-black/40 backdrop-blur-md p-4 rounded-[calc(2rem-2px)] flex items-center justify-center border border-white/5">
+            <div class="overflow-hidden rounded-2xl">
+              <img 
+                src="/assets/mkc.jpeg" 
+                alt="MKC Logo" 
+                class="w-48 md:w-64 h-auto transform group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_0_15px_rgba(251,191,36,0.2)]"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzIyMiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjM1ZW0iPkxvZ28gTUtDPC90ZXh0Pjwvc3ZnPg=='"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 backdrop-blur-sm text-xs font-mono uppercase tracking-widest text-amber-400 mb-8 animate-emerge" style="animation-delay: 100ms">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        Edizione 2026 · Iscrizioni Chiuse
+      </div>
+
+      <p class="text-zinc-400 font-mono text-xs uppercase tracking-[0.4em] mb-4 animate-emerge" style="animation-delay: 200ms">
+        Matenano Summer Tournament
+      </p>
+      
+      <h1 class="text-5xl md:text-8xl font-display font-bold tracking-tighter text-white uppercase mb-8 leading-none animate-emerge" style="animation-delay: 300ms">
+        Chi sarà il<br />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_0_30px_rgba(251,191,36,0.15)]">nuovo re?</span>
+      </h1>
+
+      <p class="text-base md:text-lg text-zinc-300 max-w-2xl mx-auto font-light leading-relaxed mb-12 animate-emerge" style="animation-delay: 400ms">
+        Benvenuto sulla piattaforma ufficiale della Matenano Kings Cup. Il palcoscenico dell'estate marchigiana dove squadre, atleti e tifosi si sfidano per la gloria eterna.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center animate-emerge" style="animation-delay: 500ms">
+        <button class="w-full sm:w-auto px-8 py-4 bg-amber-400 text-black font-bold uppercase tracking-widest text-xs rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
+          Tabellone Match
+        </button>
+        <a href="#torneo" class="w-full sm:w-auto px-8 py-4 bg-black/50 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white hover:text-black transition-colors duration-300 text-center">
+          Esplora Sezioni
+        </a>
+      </div>
+    </div>
+  </section>
+  <section id="torneo" class="py-28 bg-black relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-20 text-center md:text-left" data-aos="fade-up">
+        <span class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 block mb-3">La Competizione</span>
+        <h2 class="text-3xl md:text-5xl font-display font-bold text-white uppercase tracking-tight">
+          Esplora il Torneo
+        </h2>
+        <div class="w-12 h-[2px] bg-amber-400 mt-4 mx-auto md:mx-0"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="100">
+          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
+            ⚽
+          </div>
+          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Match & Calendario</h3>
+          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
+            Tutte le date, gli orari delle partite e i risultati aggiornati in tempo reale per non perdere neanche un minuto di gioco.
+          </p>
+          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="200">
+          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
+            📊
+          </div>
+          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Gironi & Classifiche</h3>
+          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
+            Segui il posizionamento delle squadre, i punti accumulati, la differenza reti e le proiezioni per la fase a eliminazione diretta.
+          </p>
+          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="300">
+          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
+            👑
+          </div>
+          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Marcatori & MVP</h3>
+          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
+            Chi sta dominando la competizione? La classifica capocannonieri, gli assistman e i migliori giocatori di ogni singola serata.
+          </p>
+          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="albo" class="py-24 bg-zinc-950 border-t border-white/5">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <div class="text-amber-400 text-4xl mb-6 animate-bounce">🏆</div>
+      <h2 data-aos="fade-up" class="text-2xl md:text-4xl font-display font-bold text-white uppercase tracking-tight mb-6">L'Albo d'Oro</h2>
+      <p data-aos="fade-up" data-aos-delay="100" class="text-zinc-400 font-light leading-relaxed mb-8">
+        Ogni anno scriviamo un nuovo capitolo di storia calcistica marchigiana. Le leggende nascono qui e i loro nomi restano scolpiti nel trofeo. A breve sarà online la sezione dedicata ai vecchi vincitori.
+      </p>
+      <div data-aos="fade-up" data-aos-delay="200" class="inline-block px-5 py-3 bg-zinc-900 border border-amber-500/20 rounded-xl font-mono text-xs text-amber-400">
+        Current Champion: SOLD OUT
+      </div>
+    </div>
+  </section>
+
+</MkcLayout>

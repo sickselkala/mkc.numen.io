@@ -1,0 +1,65 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="it" class="bg-black text-white selection:bg-amber-400 selection:text-black scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="font-sans antialiased overflow-x-hidden min-h-screen flex flex-col justify-between">
+    
+    <Navbar />
+    
+    <main class="flex-grow">
+      <slot />
+    </main>
+    
+    <Footer />
+
+    <script>
+      // Importiamo Lenis e AOS direttamente nel client
+      import Lenis from 'lenis';
+      import AOS from 'aos';
+      import 'aos/dist/aos.css';
+
+      // Inizializza lo smooth scroll
+      const lenis = new Lenis({ autoRaf: true, duration: 1.2 });
+
+      // Usiamo il classico DOMContentLoaded visto che abbiamo rimosso le ViewTransitions
+      document.addEventListener('DOMContentLoaded', () => {
+        AOS.init({ duration: 800, once: true, offset: 50 });
+        setTimeout(() => AOS.refresh(), 100);
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  
+  /* Animazione nativa per gli elementi testuali della Hero Section */
+  @keyframes emergeEffect {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-emerge {
+    animation: emergeEffect 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+import MkcLayout from '../layouts/MkcLayout.astro';
+---
+
+<MkcLayout title="Il Torneo | Matenano Kings Cup">
+  <section class="relative min-h-[85vh] flex items-center justify-center pt-20 overflow-hidden">
+    <div class="absolute inset-0 z-0 flex items-center justify-center">
+      <div class="w-[400px] h-[400px] bg-amber-500/[0.05] rounded-full filter blur-[100px] animate-pulse"></div>
+    </div>
+
+    <div class="relative z-10 max-w-3xl mx-auto px-4 text-center">
+      <span data-aos="fade-down" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-zinc-900/50 backdrop-blur-md text-xs font-mono uppercase tracking-widest text-zinc-400 mb-8">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        Fase di Setup in Corso
+      </span>
+      
+      <h1 data-aos="fade-up" class="text-4xl md:text-6xl font-display font-bold tracking-tight text-white uppercase mb-6">
+        Tabellone &<br />Regolamento
+      </h1>
+      
+      <div data-aos="fade-up" data-aos-delay="100" class="space-y-6 text-zinc-400 font-light text-lg leading-relaxed max-w-2xl mx-auto p-8 rounded-3xl bg-zinc-900/30 border border-white/5 backdrop-blur-sm">
+        <p>
+          Il fischio d'inizio si avvicina, ma prima di scendere in campo dobbiamo definire le armate. 
+        </p>
+        <p>
+          Attualmente <strong>siamo in attesa della chiusura ufficiale delle iscrizioni</strong>. Non appena avremo la lista definitiva delle squadre partecipanti a questa edizione della Matenano Kings Cup, il direttivo strutturerà il calendario ufficiale delle sfide, gli orari e il regolamento specifico del torneo.
+        </p>
+        <p class="text-amber-400/80 font-mono text-sm uppercase tracking-wider pt-4">
+          // Tornate a visitare questa pagina al termine delle iscrizioni.
+        </p>
+      </div>
+
+      <div data-aos="fade-up" data-aos-delay="200" class="mt-10">
+        <a href="/" class="inline-flex items-center justify-center px-8 py-4 border border-white/20 text-white rounded-full hover:bg-white hover:text-black transition-colors text-xs font-bold uppercase tracking-widest">
+          Ritorna alla Home
+        </a>
+      </div>
+    </div>
+  </section>
+</MkcLayout>
