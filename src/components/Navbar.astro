@@ -1,4 +1,6 @@
-<header class="fixed w-full top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5 transition-all">
+---
+---
+<header class="fixed w-full top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/5 transition-all">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
     
     <a href="/" class="flex items-center gap-3 group">
@@ -14,11 +16,53 @@
       <a href="/albo" class="text-zinc-400 hover:text-white transition-colors">Albo d'Oro</a>
     </nav>
 
-    <div>
-      <a href="https://numenaps.it" class="text-xs font-mono uppercase tracking-wider text-zinc-500 hover:text-white transition-colors flex items-center gap-2">
-        <span>&larr;</span> <span class="hidden sm:inline">Numen APS</span>
+    <div class="flex items-center gap-4">
+      <a href="https://numenaps.it" class="hidden md:flex text-xs font-mono uppercase tracking-wider text-zinc-500 hover:text-white transition-colors items-center gap-2">
+        <span>&larr;</span> <span>Numen APS</span>
       </a>
+
+      <button id="mobile-menu-btn" class="md:hidden text-zinc-400 hover:text-white focus:outline-none p-2" aria-label="Apri menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path id="icon-menu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <path id="icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
     </div>
 
   </div>
+
+  <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-zinc-950 border-b border-white/10 shadow-2xl origin-top">
+    <div class="px-4 pt-4 pb-6 space-y-2 flex flex-col font-mono text-xs uppercase tracking-widest text-center">
+      <a href="/iltorneo" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Il Torneo</a>
+      <a href="/classifiche" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Gironi & Classifiche</a>
+      <a href="/albo" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Albo d'Oro</a>
+      
+      <div class="w-12 h-[1px] bg-white/10 mx-auto my-4"></div>
+      
+      <a href="https://numenaps.it" class="block py-4 text-amber-500 hover:text-amber-400 rounded-xl transition-colors">
+        &larr; Ritorna a Numen APS
+      </a>
+    </div>
+  </div>
 </header>
+
+<script>
+  // Logica per aprire e chiudere il menu mobile
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconClose = document.getElementById('icon-close');
+
+    if (btn && menu && iconMenu && iconClose) {
+      btn.addEventListener('click', () => {
+        // Mostra/Nascondi la tendina
+        menu.classList.toggle('hidden');
+        
+        // Scambia le icone (Hamburger <-> X)
+        iconMenu.classList.toggle('hidden');
+        iconClose.classList.toggle('hidden');
+      });
+    }
+  });
+</script>
