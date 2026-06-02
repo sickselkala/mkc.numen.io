@@ -1,0 +1,19 @@
+{
+  "gironi": {
+    "Girone A": ["Squadra 1", "Squadra 2", "Squadra 3", "Squadra 4"],
+    "Girone B": ["Squadra 5", "Squadra 6", "Squadra 7", "Squadra 8"],
+    "Girone C": ["Squadra 9", "Squadra 10", "Squadra 11", "Squadra 12"]
+  },
+  "partite": [
+    { "giornata": 1, "girone": "Girone A", "casa": "Squadra 1", "fuori": "Squadra 2", "golCasa": 3, "golFuori": 1 },
+    { "giornata": 1, "girone": "Girone A", "casa": "Squadra 3", "fuori": "Squadra 4", "golCasa": 2, "golFuori": 2 },
+    { "giornata": 1, "girone": "Girone B", "casa": "Squadra 5", "fuori": "Squadra 6", "golCasa": 0, "golFuori": 1 },
+    { "giornata": 1, "girone": "Girone B", "casa": "Squadra 7", "fuori": "Squadra 8", "golCasa": 4, "golFuori": 2 },
+    { "giornata": 1, "girone": "Girone C", "casa": "Squadra 9", "fuori": "Squadra 10", "golCasa": 1, "golFuori": 1 },
+    { "giornata": 1, "girone": "Girone C", "casa": "Squadra 11", "fuori": "Squadra 12", "golCasa": 2, "golFuori": 3 }
+  ],
+  "marcatori": [
+    { "nome": "M. Rossi", "squadra": "Squadra 1", "gol": 5 },
+    { "nome": "A. Tocci", "squadra": "Squadra 5", "gol": 4 }
+  ]
+}
