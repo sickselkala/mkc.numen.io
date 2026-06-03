@@ -4,28 +4,7 @@ import TournamentRounds from '../components/react/TournamentRounds';
 ---
 
 <MkcLayout title="Gironi & Classifiche - MKC Kings Cup">
-  <!-- Page Header -->
-  <section class="pt-24 pb-8 px-4 text-center" data-aos="fade-down">
-    <!-- Status Badge -->
-    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500/10 border border-amber-500/25 mb-8">
-      <span class="text-amber-400 text-sm animate-pulse">&#9733;</span>
-      <span class="text-[11px] font-bold uppercase tracking-[3px] text-amber-400">Torneo in Corso</span>
-    </div>
-    
-    <!-- Title -->
-    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-[1.05] mb-4 font-display">
-      Gironi &<br />Classifiche
-    </h1>
-    
-    <!-- Subtitle -->
-  </section>
-
-  <!-- Tournament Rounds (React Island) -->
-  <section class="relative py-8">
-    <!-- Ambient glow -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-amber-500/[0.04] blur-[120px] pointer-events-none"></div>
-    
-    <!-- React Component with client hydration -->
+  <main class="py-12 bg-black min-h-screen text-white">
     <TournamentRounds client:load />
-  </section>
+  </main>
 </MkcLayout>
