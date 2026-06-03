@@ -18,8 +18,12 @@
     "aos": "^2.3.4",
     "astro": "^6.4.2",
     "lenis": "^1.0.45",
+    "papaparse": "^5.5.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "tailwindcss": "^3.4.1"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.5.2"
   }
 }
