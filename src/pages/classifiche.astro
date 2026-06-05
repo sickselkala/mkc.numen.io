@@ -4,7 +4,113 @@ import TournamentRounds from '../components/react/TournamentRounds';
 ---
 
 <MkcLayout title="Gironi & Classifiche - MKC Kings Cup">
-  <main class="py-12 bg-black min-h-screen text-white">
-    <TournamentRounds client:load />
+  {/* IL TUO MAIN ORIGINALE - POTENZIATO CON LA TEMPESTA DI LUCI IDENTICA A INDEX E ILTORNEO */}
+  <main class="py-12 bg-[#030302] min-h-screen text-white relative overflow-hidden">
+    
+    {/* LIVELLO SPRAZZI ORO MULTIPLI CON EFFETTO FADE-IN CONTINUO (Background z-0) */}
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      
+      {/* 1. LAMA DI LUCE ORO ROTANTE VELOCE */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]"
+        style="background: linear-gradient(135deg, transparent 40%, rgba(255,234,0,0.8) 50%, transparent 60%); filter: blur(55px);"
+      ></div>
+
+      {/* 2. SECONDA LAMA CONTRO-ROTANTE VELOCIZZATA */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]"
+        style="background: linear-gradient(45deg, transparent 42%, rgba(212,175,55,0.7) 50%, transparent 58%); filter: blur(45px); animation-direction: reverse;"
+      ></div>
+
+      {/* 3. SPRAZZO IN ALTO A SINISTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_2.5s_ease-in-out_infinite]"
+        style="
+          top: -20%;
+          left: -15%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, rgba(212,175,55,0.08) 40%, transparent 70%);
+        "
+      ></div>
+
+      {/* 4. SPRAZZO IN BASSO A DESTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_3s_ease-in-out_infinite]"
+        style="
+          bottom: -20%;
+          right: -15%;
+          background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, rgba(234,179,8,0.05) 45%, transparent 70%);
+          animation-delay: 1s;
+        "
+      ></div>
+
+      {/* 5. FARO LATERALE AD ALTA VELOCITÀ */}
+      <div 
+        class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-40 animate-[bounce_5s_infinite]"
+        style="
+          top: 25%;
+          right: -10%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, transparent 65%);
+          filter: blur(30px);
+        "
+      ></div>
+
+      {/* 6. SPRAZZO IN ALTO A DESTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-color-dodge animate-[pulse_2s_ease-in-out_infinite]"
+        style="
+          top: -10%;
+          right: -5%;
+          background: radial-gradient(circle, rgba(250,204,21,0.2) 0%, transparent 65%);
+          animation-delay: 0.5s;
+        "
+      ></div>
+
+      {/* 7. SPRAZZO IN BASSO A SINISTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-screen animate-[pulse_3.5s_ease-in-out_infinite]"
+        style="
+          bottom: -10%;
+          left: -5%;
+          background: radial-gradient(circle, rgba(234,179,8,0.18) 0%, transparent 65%);
+          animation-delay: 1.5s;
+        "
+      ></div>
+
+      {/* 8. BAGLIORE CENTRALE DI SFONDO */}
+      <div 
+        class="absolute top-[20%] left-[15%] w-[650px] h-[650px] rounded-full mix-blend-screen animate-[pulse_4s_ease-in-out_infinite]"
+        style="
+          background: radial-gradient(circle, rgba(255,234,0,0.15) 0%, transparent 60%);
+          filter: blur(40px);
+          animation-delay: 0.7s;
+        "
+      ></div>
+
+      {/* STRUTTURA GEOMETRICA DI RIFRAZIONE ACCESA */}
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+    </div>
+
+    {/* CONTENUTO IN PRIMO PIANO (z-10) */}
+    <div class="max-w-7xl mx-auto px-4 relative z-10 space-y-10">
+      
+      {/* INSERIMENTO LOGO RICHIESTO (mkc26.png) CON ALONE DORATO */}
+      <div class="flex flex-col items-center justify-center pt-4 text-center">
+        <div class="relative group max-w-xs md:max-w-sm">
+          <div class="absolute inset-0 bg-[#ffea00]/20 blur-[60px] rounded-full opacity-70"></div>
+          
+          <img 
+            src="/assets/mkc26.png" 
+            alt="Matenano Kings Cup 2026" 
+            class="w-64 md:w-80 h-auto object-contain filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.9)] relative z-10"
+          />
+        </div>
+      </div>
+
+      {/* CONTENITORE EXCEL DEL TOURNAMENT ROUNDS */}
+      <div class="bg-black/40 backdrop-blur-md rounded-3xl p-2 md:p-6 border border-white/5 shadow-2xl">
+        <TournamentRounds client:load />
+      </div>
+
+    </div>
   </main>
 </MkcLayout>

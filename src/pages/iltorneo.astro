@@ -1,40 +1,176 @@
 ---
 import MkcLayout from '../layouts/MkcLayout.astro';
+import CardsCarousel from '../components/react/CardsCarousel.tsx';
 ---
 
-<MkcLayout title="Il Torneo | Matenano Kings Cup">
-  <section class="relative min-h-[85vh] flex items-center justify-center pt-20 overflow-hidden">
-    <div class="absolute inset-0 z-0 flex items-center justify-center">
-      <div class="w-[400px] h-[400px] bg-amber-500/[0.05] rounded-full filter blur-[100px] animate-pulse"></div>
+<MkcLayout title="Regolamento & Carte | Matenano Kings Cup">
+  {/* SFONDO TOTAL BLACK IDENTICO A INDEX.ASTRO */}
+  <main class="py-16 bg-[#030302] min-h-screen text-[#ffffff] px-4 relative overflow-hidden">
+    
+    {/* LIVELLO SPRAZZI ORO MULTIPLI CON EFFETTO FADE-IN CONTINUO (Background z-0) */}
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      
+      {/* 1. LAMA DI LUCE ORO ROTANTE VELOCE */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]"
+        style="background: linear-gradient(135deg, transparent 40%, rgba(255,234,0,0.8) 50%, transparent 60%); filter: blur(55px);"
+      ></div>
+
+      {/* 2. SECONDA LAMA CONTRO-ROTANTE VELOCIZZATA */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]"
+        style="background: linear-gradient(45deg, transparent 42%, rgba(212,175,55,0.7) 50%, transparent 58%); filter: blur(45px); animation-direction: reverse;"
+      ></div>
+
+      {/* 3. SPRAZZO IN ALTO A SINISTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_2.5s_ease-in-out_infinite]"
+        style="
+          top: -20%;
+          left: -15%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, rgba(212,175,55,0.08) 40%, transparent 70%);
+        "
+      ></div>
+
+      {/* 4. SPRAZZO IN BASSO A DESTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_3s_ease-in-out_infinite]"
+        style="
+          bottom: -20%;
+          right: -15%;
+          background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, rgba(234,179,8,0.05) 45%, transparent 70%);
+          animation-delay: 1s;
+        "
+      ></div>
+
+      {/* 5. FARO LATERALE AD ALTA VELOCITÀ */}
+      <div 
+        class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-40 animate-[bounce_5s_infinite]"
+        style="
+          top: 25%;
+          right: -10%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, transparent 65%);
+          filter: blur(30px);
+        "
+      ></div>
+
+      {/* 6. SPRAZZO IN ALTO A DESTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-color-dodge animate-[pulse_2s_ease-in-out_infinite]"
+        style="
+          top: -10%;
+          right: -5%;
+          background: radial-gradient(circle, rgba(250,204,21,0.2) 0%, transparent 65%);
+          animation-delay: 0.5s;
+        "
+      ></div>
+
+      {/* 7. SPRAZZO IN BASSO A SINISTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-screen animate-[pulse_3.5s_ease-in-out_infinite]"
+        style="
+          bottom: -10%;
+          left: -5%;
+          background: radial-gradient(circle, rgba(234,179,8,0.18) 0%, transparent 65%);
+          animation-delay: 1.5s;
+        "
+      ></div>
+
+      {/* 8. BAGLIORE CENTRALE DI SFONDO */}
+      <div 
+        class="absolute top-[20%] left-[15%] w-[650px] h-[650px] rounded-full mix-blend-screen animate-[pulse_4s_ease-in-out_infinite]"
+        style="
+          background: radial-gradient(circle, rgba(255,234,0,0.15) 0%, transparent 60%);
+          filter: blur(40px);
+          animation-delay: 0.7s;
+        "
+      ></div>
+
+      {/* STRUTTURA GEOMETRICA DI RIFRAZIONE ACCESA */}
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
     </div>
 
-    <div class="relative z-10 max-w-3xl mx-auto px-4 text-center">
-      <span data-aos="fade-down" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-zinc-900/50 backdrop-blur-md text-xs font-mono uppercase tracking-widest text-zinc-400 mb-8">
-        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-        Fase di Setup in Corso
-      </span>
+    {/* CONTENUTO IN PRIMO PIANO (z-10) */}
+    <div class="max-w-7xl mx-auto space-y-12 relative z-10">
       
-      <h1 data-aos="fade-up" class="text-4xl md:text-6xl font-display font-bold tracking-tight text-white uppercase mb-6">
-        Tabellone &<br />Regolamento
-      </h1>
-      
-      <div data-aos="fade-up" data-aos-delay="100" class="space-y-6 text-zinc-400 font-light text-lg leading-relaxed max-w-2xl mx-auto p-8 rounded-3xl bg-zinc-900/30 border border-white/5 backdrop-blur-sm">
-        <p>
-          Il fischio d'inizio si avvicina, ma prima di scendere in campo dobbiamo definire le armate. 
-        </p>
-        <p>
-          Attualmente <strong>siamo in attesa della chiusura ufficiale delle iscrizioni</strong>. Non appena avremo la lista definitiva delle squadre partecipanti a questa edizione della Matenano Kings Cup, il direttivo strutturerà il calendario ufficiale delle sfide, gli orari e il regolamento specifico del torneo.
-        </p>
-        <p class="text-amber-400/80 font-mono text-sm uppercase tracking-wider pt-4">
-          // Tornate a visitare questa pagina al termine delle iscrizioni.
-        </p>
-      </div>
-
-      <div data-aos="fade-up" data-aos-delay="200" class="mt-10">
-        <a href="/" class="inline-flex items-center justify-center px-8 py-4 border border-white/20 text-white rounded-full hover:bg-white hover:text-black transition-colors text-xs font-bold uppercase tracking-widest">
-          Ritorna alla Home
+      {/* LOGO CENTRATO CON ALONE DORATO */}
+      <div class="flex justify-center items-center pt-4">
+        <a href="/" class="hover:opacity-90 transition-opacity relative group">
+          <div class="absolute inset-0 bg-[#ffea00]/20 blur-[45px] rounded-full opacity-70"></div>
+          <img 
+            src="/assets/mkc26.png" 
+            alt="MKC Logo" 
+            class="w-48 md:w-56 h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.95)] relative z-10"
+          />
         </a>
       </div>
+
+      {/* INTESTAZIONE: FISSA IL COLORE #ffea00 E APPLICA IL FASCIO DI LUCE CROMATO AL CENTRO */}
+      <div class="text-center space-y-4">
+        <span data-aos="fade-down" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#ffea00]/20 bg-[#292923] text-xs font-mono uppercase tracking-widest text-[#ffea00]">
+          <span class="w-2 h-2 rounded-full bg-[#ffea00] animate-pulse"></span>
+          Edizione 2026
+        </span>
+        <h1 
+          data-aos="fade-up" 
+          class="text-4xl md:text-6xl font-display font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#cca100] via-[#ffea00] via-[#fffeb3] via-[#ffea00] to-[#cca100] drop-shadow-[0_4px_20px_rgba(255,234,0,0.15)] pb-2"
+        >
+          Regolamento e Carte Speciali
+        </h1>
+      </div>
+
+      {/* SEZIONE CAROSELLO CENTRALIZZATA */}
+      <div data-aos="fade-up" data-aos-delay="100" class="py-4">
+        <CardsCarousel client:load />
+      </div>
+
+      {/* SEZIONE REGOLE PRINCIPALI IN STILE BENTO SENZA EMOJI */}
+      <div data-aos="fade-up" data-aos-delay="150" class="max-w-5xl mx-auto py-8">
+        <h2 class="text-2xl md:text-3xl font-display font-black text-center uppercase tracking-wider mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[#cca100] via-[#ffea00] via-[#fffeb3] via-[#ffea00] to-[#cca100]">
+          Regole Fondamentali
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Regola 1 */}
+          <div class="bg-[#121210]/85 backdrop-blur-md border border-white/5 rounded-2xl p-6 hover:border-[#ffea00]/40 transition-all shadow-2xl">
+            <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-3">Composizione Squadra</h3>
+            <p class="text-sm text-zinc-400 font-mono leading-relaxed">
+              Ogni squadra deve essere obbligatoriamente composta da <strong class="text-[#ffea00]">5 giocatori</strong> in campo e <strong class="text-[#ffea00]">1 Presidente</strong> non giocante.
+            </p>
+          </div>
+
+          {/* Regola 2 */}
+          <div class="bg-[#121210]/85 backdrop-blur-md border border-white/5 rounded-2xl p-6 hover:border-[#ffea00]/40 transition-all shadow-2xl">
+            <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-3">Formato Partita</h3>
+            <p class="text-sm text-zinc-400 font-mono leading-relaxed">
+              Durata totale di <strong class="text-white">40 minuti</strong> (due tempi da 20). Un lancio della monetina decide il possesso nel 2° tempo o negli <strong class="text-[#ffea00]">ultimi 2 minuti</strong>.
+            </p>
+          </div>
+
+          {/* Regola 3 */}
+          <div class="bg-[#121210]/85 backdrop-blur-md border border-white/5 rounded-2xl p-6 hover:border-[#ffea00]/40 transition-all shadow-2xl">
+            <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-3">Gli Ultimi 2 Minuti</h3>
+            <p class="text-sm text-zinc-400 font-mono leading-relaxed">
+              In caso di superiorità di una squadra, i gol <strong class="text-[#ffea00]">valgono doppio</strong>. In caso di parità, il gol sancisce direttamente la vittoria (<strong class="text-white">Golden Goal</strong>).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* TASTO DOWNLOAD REGOLAMENTO COMPLETO */}
+      <div data-aos="fade-up" data-aos-delay="200" class="text-center max-w-md mx-auto pt-8 space-y-4">
+        <p class="font-mono text-xs text-[#ffffff]/40 uppercase tracking-wider">
+          Per consultare tutte le regole nel dettaglio
+        </p>
+        <a 
+          href="/assets/regolamento-mkc.pdf" 
+          download
+          class="inline-flex items-center justify-center px-8 py-4 bg-[#ffea00] text-black font-display font-black uppercase text-xs tracking-widest rounded-xl hover:bg-white hover:scale-105 transition-all shadow-[0_0_35px_rgba(255,234,0,0.5)]"
+        >
+          Scarica Regolamento (PDF)
+        </a>
+      </div>
+
     </div>
-  </section>
+  </main>
 </MkcLayout>

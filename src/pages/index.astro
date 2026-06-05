@@ -2,130 +2,264 @@
 import MkcLayout from '../layouts/MkcLayout.astro';
 ---
 
-<MkcLayout title="Matenano Kings Cup | Chi sarà il nuovo re?">
-  
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+<MkcLayout title="Home | Matenano Kings Cup">
+  {/* SFONDO TOTAL BLACK CON SHOCKWAVE DI LUCI DORATE MORBIDE MA VELOCI */}
+  <main class="py-16 bg-[#030302] min-h-screen text-white px-4 relative overflow-hidden">
     
-    <div class="absolute inset-0 z-0">
-      <img src="/assets/mkc.jpeg" alt="Matenano Kings Cup Background" class="w-full h-full object-cover opacity-30 filter blur-xl scale-110" onerror="this.style.display='none'" />
+    {/* LIVELLO SPRAZZI ORO MULTIPLI CON EFFETTO FADE-IN CONTINUO */}
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
       
-      <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-zinc-950/80 to-black"></div>
+      {/* 1. LAMA DI LUCE ORO ROTANTE VELOCE */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]"
+        style="background: linear-gradient(135deg, transparent 40%, rgba(255,234,0,0.8) 50%, transparent 60%); filter: blur(55px);"
+      ></div>
+
+      {/* 2. SECONDA LAMA CONTRO-ROTANTE VELOCIZZATA */}
+      <div 
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]"
+        style="background: linear-gradient(45deg, transparent 42%, rgba(212,175,55,0.7) 50%, transparent 58%); filter: blur(45px); animation-direction: reverse;"
+      ></div>
+
+      {/* 3. SPRAZZO IN ALTO A SINISTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_2.5s_ease-in-out_infinite]"
+        style="
+          top: -20%;
+          left: -15%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, rgba(212,175,55,0.08) 40%, transparent 70%);
+        "
+      ></div>
+
+      {/* 4. SPRAZZO IN BASSO A DESTRA */}
+      <div 
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_3s_ease-in-out_infinite]"
+        style="
+          bottom: -20%;
+          right: -15%;
+          background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, rgba(234,179,8,0.05) 45%, transparent 70%);
+          animation-delay: 1s;
+        "
+      ></div>
+
+      {/* 5. FARO LATERALE AD ALTA VELOCITÀ */}
+      <div 
+        class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-40 animate-[bounce_5s_infinite]"
+        style="
+          top: 25%;
+          right: -10%;
+          background: radial-gradient(circle, rgba(255,234,0,0.3) 0%, transparent 65%);
+          filter: blur(30px);
+        "
+      ></div>
+
+      {/* 6. SPRAZZO IN ALTO A DESTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-color-dodge animate-[pulse_2s_ease-in-out_infinite]"
+        style="
+          top: -10%;
+          right: -5%;
+          background: radial-gradient(circle, rgba(250,204,21,0.2) 0%, transparent 65%);
+          animation-delay: 0.5s;
+        "
+      ></div>
+
+      {/* 7. SPRAZZO IN BASSO A SINISTRA */}
+      <div 
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-screen animate-[pulse_3.5s_ease-in-out_infinite]"
+        style="
+          bottom: -10%;
+          left: -5%;
+          background: radial-gradient(circle, rgba(234,179,8,0.18) 0%, transparent 65%);
+          animation-delay: 1.5s;
+        "
+      ></div>
+
+      {/* 8. BAGLIORE CENTRALE DI SFONDO */}
+      <div 
+        class="absolute top-[20%] left-[15%] w-[650px] h-[650px] rounded-full mix-blend-screen animate-[pulse_4s_ease-in-out_infinite]"
+        style="
+          background: radial-gradient(circle, rgba(255,234,0,0.15) 0%, transparent 60%);
+          filter: blur(40px);
+          animation-delay: 0.7s;
+        "
+      ></div>
+
+      {/* STRUTTURA GEOMETRICA DI RIFRAZIONE ACCESA */}
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
     </div>
 
-    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-      <div class="w-[500px] h-[500px] bg-amber-500/[0.06] rounded-full filter blur-[120px] animate-pulse"></div>
-      <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
-    </div>
-
-    <div class="relative z-10 max-w-5xl mx-auto px-4 text-center flex flex-col items-center">
+    {/* CONTENUTO CENTRATO */}
+    <div class="max-w-7xl mx-auto space-y-12 relative z-10">
       
-      <div class="mb-10 relative group animate-emerge">
-        <div class="absolute -inset-4 bg-amber-500/20 blur-2xl rounded-full group-hover:bg-amber-500/30 transition-colors duration-700 z-0"></div>
-        
-        <div class="relative z-10 p-[2px] rounded-[2rem] bg-gradient-to-br from-amber-400/60 via-amber-600/10 to-transparent shadow-[0_0_40px_rgba(251,191,36,0.15)] group-hover:shadow-[0_0_60px_rgba(251,191,36,0.25)] transition-all duration-700 transform group-hover:-translate-y-2">
+      {/* SEZIONE LOGO PRINCIPALE E TITOLO */}
+      <div class="flex flex-col items-center justify-center pt-8 text-center space-y-6">
+        <div class="relative group">
+          {/* Alone giallo morbido dietro l'immagine */}
+          <div class="absolute inset-0 bg-[#ffea00]/30 blur-[45px] rounded-full opacity-70 group-hover:opacity-100 group-hover:blur-[35px] transition-all duration-500"></div>
           
-          <div class="bg-black/40 backdrop-blur-md p-4 rounded-[calc(2rem-2px)] flex items-center justify-center border border-white/5">
-            <div class="overflow-hidden rounded-2xl">
-              <img 
-                src="/assets/mkc.jpeg" 
-                alt="MKC Logo" 
-                class="w-48 md:w-64 h-auto transform group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_0_15px_rgba(251,191,36,0.2)]"
-                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzIyMiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjM1ZW0iPkxvZ28gTUtDPC90ZXh0Pjwvc3ZnPg=='"
-              />
-            </div>
-          </div>
+          <img 
+            src="/assets/mkc26.png" 
+            alt="Matenano Kings Cup 2026"
+            class="w-40 md:w-56 h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.95)] relative z-10"
+          />
+        </div>
+
+        {/* DESCRIZIONE E ANTEPRIMA TESTO */}
+        <div class="max-w-4xl mx-auto px-4 pt-2 text-center">
+          
+          {/* TITOLO SPEZZATO CORRETTAMENTE: FRASE SOPRA E "RE?" SOTTO IN CORSIVO */}
+          <h1 class="text-regale block py-2 leading-none">
+            <span class="block w-full text-3xl md:text-5xl lg:text-6xl text-shine-silver-gold tracking-[0.05em] font-bold pb-4">
+              Chi vuole essere il
+            </span>
+            <span class="block w-full text-7xl md:text-9xl lg:text-[10rem] text-shine-re tracking-[0.02em] font-extrabold italic filter drop-shadow-[0_0_50px_rgba(255,234,0,0.7)] pt-2">
+              Re?
+            </span>
+          </h1>
+          
+          <p class="text-sm md:text-base font-sans text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] pt-8 max-w-2xl mx-auto">
+            Dodici squadre, imprevisti pronti a stravolgere gli incontri. Segui gli scontri dal 28 giugno al 10 luglio.
+          </p>
         </div>
       </div>
 
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 backdrop-blur-sm text-xs font-mono uppercase tracking-widest text-amber-400 mb-8 animate-emerge" style="animation-delay: 100ms">
-        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-        Edizione 2026 · Iscrizioni APERTE
-      </div>
-
-      <p class="text-zinc-400 font-mono text-xs uppercase tracking-[0.4em] mb-4 animate-emerge" style="animation-delay: 200ms">
-        Matenano Kings Cup
-      </p>
-      
-      <h1 class="text-5xl md:text-8xl font-display font-bold tracking-tighter text-white uppercase mb-8 leading-none animate-emerge" style="animation-delay: 300ms">
-        Chi sarà il<br />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_0_30px_rgba(251,191,36,0.15)]">nuovo re?</span>
-      </h1>
-
-      <p class="text-base md:text-lg text-zinc-300 max-w-2xl mx-auto font-light leading-relaxed mb-12 animate-emerge" style="animation-delay: 400ms">
-        Benvenuto sulla piattaforma ufficiale della Matenano Kings Cup. Il palcoscenico dell'estate marchigiana dove squadre, atleti e tifosi si sfidano per la gloria eterna.
-      </p>
-
-      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center animate-emerge" style="animation-delay: 500ms">
-        <button class="w-full sm:w-auto px-8 py-4 bg-amber-400 text-black font-bold uppercase tracking-widest text-xs rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
+      {/* REINDIRIZZAMENTO BOTTONI PRINCIPALI */}
+      <div class="flex flex-wrap justify-center gap-5 pt-2">
+        <a 
+          href="/classifiche" 
+          class="px-10 py-4 bg-[#ffea00] text-black font-display font-black uppercase text-sm tracking-widest rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_35px_rgba(255,234,0,0.6)] animate-[pulse_2s_infinite]"
+        >
           Tabellone Match
-        </button>
-        <a href="/classifiche" class="w-full sm:w-auto px-8 py-4 bg-black/50 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white hover:text-black transition-colors duration-300 text-center">
-      Esplora Sezioni
-    </a>
-      </div>
-    </div>
-  </section>
-  <section id="torneo" class="py-28 bg-black relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="mb-20 text-center md:text-left" data-aos="fade-up">
-        <span class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 block mb-3">La Competizione</span>
-        <h2 class="text-3xl md:text-5xl font-display font-bold text-white uppercase tracking-tight">
-          Esplora il Torneo
-        </h2>
-        <div class="w-12 h-[2px] bg-amber-400 mt-4 mx-auto md:mx-0"></div>
+        </a>
+        <a 
+          href="#esplora" 
+          class="px-10 py-4 bg-black/40 backdrop-blur-sm border border-white/20 text-white font-display font-black uppercase text-sm tracking-widest rounded-full hover:border-[#ffea00] hover:text-[#ffea00] hover:bg-[#ffea00]/5 transition-all"
+        >
+          Esplora Sezioni
+        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="100">
-          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
-            ⚽
-          </div>
-          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Match & Calendario</h3>
-          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
-            Tutte le date, gli orari delle partite e i risultati aggiornati in tempo reale per non perdere neanche un minuto di gioco.
-          </p>
-          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
+      <hr class="border-white/5 max-w-xl mx-auto my-4" />
+
+      {/* SEZIONE ESPLORA IL TORNEO */}
+      <div id="esplora" class="space-y-10 pt-2">
+        <div class="text-left">
+          <span class="font-mono text-xs uppercase tracking-widest text-[#ffea00]/70 font-bold">LA COMPETIZIONE</span>
+          <h2 class="text-3xl md:text-4xl font-display font-black uppercase tracking-wider mt-1 drop-shadow-sm">
+            Esplora il Torneo
+          </h2>
+          <div class="w-16 h-1 bg-[#ffea00] mt-3"></div>
         </div>
 
-        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="200">
-          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
-            📊
+        {/* 3 BOX STRUTTURATI */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* BOX 1 */}
+          <div class="bg-[#121210]/95 backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col justify-between space-y-6 hover:border-[#ffea00]/40 transition-all shadow-2xl group">
+            <div class="space-y-3">
+              <h3 class="text-xl font-display font-black uppercase tracking-wider text-[#ffea00]">
+                Carte Speciali
+              </h3>
+              <p class="text-sm font-mono text-white/70 leading-relaxed">
+                Scopri i bonus strategici e i malus ufficiali che le squadre possono pescare e giocare durante la partita.
+              </p>
+            </div>
+            <a 
+              href="/iltorneo" 
+              class="w-full text-center py-2.5 bg-[#292923] text-[#ffea00] group-hover:bg-[#ffea00] group-hover:text-black font-display font-black uppercase text-xs tracking-widest rounded-xl transition-all"
+            >
+              Vai
+            </a>
           </div>
-          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Gironi & Classifiche</h3>
-          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
-            Segui il posizionamento delle squadre, i punti accumulati, la differenza reti e le proiezioni per la fase a eliminazione diretta.
-          </p>
-          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
-        </div>
 
-        <div class="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all duration-500 group" data-aos="fade-up" data-aos-delay="300">
-          <div class="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-amber-400 border border-white/10 mb-6 group-hover:bg-amber-400 group-hover:text-black transition-colors text-xl">
-            👑
+          {/* BOX 2 */}
+          <div class="bg-[#121210]/95 backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col justify-between space-y-6 hover:border-[#ffea00]/40 transition-all shadow-2xl group">
+            <div class="space-y-3">
+              <h3 class="text-xl font-display font-black uppercase tracking-wider text-[#ffea00]">
+                Statistiche e Match
+              </h3>
+              <p class="text-sm font-mono text-white/70 leading-relaxed">
+                Segui il posizionamento dei gironi, i punti delle squadre, i risultati dei match, marcatori e classifiche MVP.
+              </p>
+            </div>
+            <a 
+              href="/classifiche" 
+              class="w-full text-center py-2.5 bg-[#292923] text-[#ffea00] group-hover:bg-[#ffea00] group-hover:text-black font-display font-black uppercase text-xs tracking-widest rounded-xl transition-all"
+            >
+              Vai
+            </a>
           </div>
-          <h3 class="text-xl font-display font-bold text-white uppercase mb-3">Marcatori & MVP</h3>
-          <p class="text-zinc-400 font-light text-sm leading-relaxed mb-6">
-            Chi sta dominando la competizione? La classifica capocannonieri, gli assistman e i migliori giocatori di ogni singola serata.
-          </p>
-          <span class="text-xs font-mono text-amber-400/60 uppercase tracking-wider group-hover:text-amber-400 transition-colors">// Coming Soon</span>
+
+          {/* BOX 3 */}
+          <div class="bg-[#121210]/95 backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col justify-between space-y-6 hover:border-[#ffea00]/40 transition-all shadow-2xl group">
+            <div class="space-y-3">
+              <h3 class="text-xl font-display font-black uppercase tracking-wider text-[#ffea00]">
+                Albo d'Oro
+              </h3>
+              <p class="text-sm font-mono text-white/70 leading-relaxed">
+                Ripercorri la storia del torneo, i vincitori delle scorse edizioni e le leggende che hanno alzato la coppa.
+              </p>
+            </div>
+            <a 
+              href="/albo" 
+              class="w-full text-center py-2.5 bg-[#292923] text-[#ffea00] group-hover:bg-[#ffea00] group-hover:text-black font-display font-black uppercase text-xs tracking-widest rounded-xl transition-all"
+            >
+              Vai
+            </a>
+          </div>
+
         </div>
-
       </div>
-    </div>
-  </section>
 
-  <section id="albo" class="py-24 bg-zinc-950 border-t border-white/5">
-    <div class="max-w-4xl mx-auto px-4 text-center">
-      <div class="text-amber-400 text-4xl mb-6 animate-bounce">🏆</div>
-      <h2 data-aos="fade-up" class="text-2xl md:text-4xl font-display font-bold text-white uppercase tracking-tight mb-6">L'Albo d'Oro</h2>
-      <p data-aos="fade-up" data-aos-delay="100" class="text-zinc-400 font-light leading-relaxed mb-8">
-        Ogni anno scriviamo un nuovo capitolo di storia calcistica marchigiana. Le leggende nascono qui e i loro nomi restano scolpiti nel trofeo. A breve sarà online la sezione dedicata ai vecchi vincitori.
-      </p>
-      <div data-aos="fade-up" data-aos-delay="200" class="inline-block px-5 py-3 bg-zinc-900 border border-amber-500/20 rounded-xl font-mono text-xs text-amber-400">
-        Current Champion: SOLD OUT
-      </div>
     </div>
-  </section>
-
+  </main>
 </MkcLayout>
+
+<style is:inline>
+  /* Importazione del font Spectral SC da Google Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Spectral+SC:ital,wght@0,300;0,400;0,700;0,800;1,300;1,400;1,700;1,800&display=swap');
+
+  .text-regale {
+    font-family: 'Spectral SC', Georgia, serif;
+  }
+
+  @keyframes shine {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Riflesso oro-argenteo per il testo d'apertura */
+  .text-shine-silver-gold {
+    background: linear-gradient(
+      110deg,
+      #d4af37 10%,
+      #e5e7eb 30%,
+      #ffffff 50%,
+      #e5e7eb 70%,
+      #d4af37 90%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 6s linear infinite;
+  }
+
+  /* Riflesso oro puro vibrante per la parola RE? */
+  .text-shine-re {
+    background: linear-gradient(
+      110deg,
+      #ffea00 10%,
+      #fffeb3 40%,
+      #ffffff 50%,
+      #fffeb3 60%,
+      #ffea00 90%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 3.5s linear infinite;
+  }
+</style>

@@ -37,7 +37,7 @@ function CountdownTimer() {
       const difference = targetDate - now;
 
       if (difference <= 0) {
-        setTimeLeft('TORNEO INIZIATO 🚀');
+        setTimeLeft('TORNEO IN CORSO!');
         clearInterval(interval);
         return;
       }
@@ -59,7 +59,7 @@ function CountdownTimer() {
   }, []);
 
   return (
-    <div className="inline-block bg-amber-500 text-black font-mono text-xs font-black tracking-widest uppercase px-5 py-2 rounded-xl shadow-lg shadow-amber-500/10 border border-amber-400">
+    <div className="inline-block bg-[#ffea00] text-black font-mono text-xs font-black tracking-widest uppercase px-5 py-2 rounded-xl shadow-lg shadow-[#ffea00]/10 border border-[#ffea00]">
       ⏳ {timeLeft}
     </div>
   );
@@ -213,14 +213,30 @@ export default function TournamentRounds() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 space-y-16">
-      {/* HEADER PULITO: VIA OGNI VECCHIO BADGE, CORPO CENTRALE CON TIMER */}
+      
+      {/* HEADER: CON EFFETTO COLPO DI LUCE CONTINUO SUL TITOLO */}
       <div className="text-center space-y-6 pt-6">
         <div>
           <CountdownTimer />
         </div>
-        <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-wider">
-          Gironi & Classifiche
-        </h1>
+        
+        {/* BLOCCO ANIMAZIONE PERSONALIZZATO PER IL TAGLIO DI LUCE CROMATO */}
+        <div className="relative inline-block">
+          <style>{`
+            @keyframes chromeShine {
+              0% { background-position: 0% center; }
+              100% { background-position: 200% center; }
+            }
+            .animate-chrome-shine {
+              background-size: 200% auto;
+              animation: chromeShine 5s linear infinite;
+            }
+          `}</style>
+          
+          <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#cca100] via-[#fffeb3] via-[#ffea00] via-[#fffeb3] to-[#cca100] animate-chrome-shine drop-shadow-[0_4px_15px_rgba(255,234,0,0.2)] pb-2">
+            Gironi & Classifiche
+          </h1>
+        </div>
       </div>
 
       {/* GIORNATE */}
@@ -231,7 +247,7 @@ export default function TournamentRounds() {
               key={g}
               onClick={() => setGiornataAttiva(g)}
               className={`px-6 py-2.5 rounded-xl font-display font-bold text-xs uppercase tracking-widest transition-all ${
-                giornataAttiva === g ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'bg-zinc-900/80 text-zinc-400 border border-white/5 hover:bg-zinc-800'
+                giornataAttiva === g ? 'bg-[#ffea00] text-black shadow-lg shadow-[#ffea00]/20' : 'bg-zinc-900/80 text-zinc-400 border border-white/5 hover:bg-zinc-800'
               }`}
             >
               Giornata {g}
@@ -252,20 +268,20 @@ export default function TournamentRounds() {
                 <div key={idx} className="flex flex-col justify-between p-5 bg-zinc-900/60 rounded-2xl border border-white/5 backdrop-blur-sm space-y-3">
                   <div className="flex justify-between items-center text-[10px] font-mono tracking-wider uppercase text-zinc-500">
                     <span>{p.girone}</span>
-                    <span className="text-amber-500/80 font-bold">📍 MKC Arena</span>
+                    <span className="text-[#ffea00]/80 font-bold">📍 MKC Arena</span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-bold text-white uppercase tracking-wide truncate w-1/3">{p.squadra1}</span>
                     
                     {IsGiocata ? (
-                      <div className="flex items-center gap-3 bg-black/40 px-4 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-amber-400 text-sm">
+                      <div className="flex items-center gap-3 bg-black/40 px-4 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-sm">
                         <span>{p.golsquadra1}</span>
                         <span className="text-zinc-600 text-xs">-</span>
                         <span>{p.golsquadra2}</span>
                       </div>
                     ) : (
-                      <div className="bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-xl text-center font-mono text-xs font-bold text-amber-400 whitespace-nowrap">
+                      <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-3 py-1 rounded-xl text-center font-mono text-xs font-bold text-[#ffea00] whitespace-nowrap">
                         ⏱️ {p.orario}
                       </div>
                     )}
@@ -281,14 +297,14 @@ export default function TournamentRounds() {
 
       {/* GIRONI */}
       <div className="space-y-8">
-        <h2 className="text-2xl font-display font-black text-white text-center uppercase tracking-wider">// Classifiche Generali</h2>
+        <h2 className="text-2xl font-display font-black text-white text-center uppercase tracking-wider">Classifiche Generali</h2>
         {Object.keys(gironiData).length === 0 ? (
-          <p className="text-center text-zinc-500 font-mono text-xs">// In attesa di dati dal foglio "gironi"...</p>
+          <p className="text-center text-zinc-500 font-mono text-xs">In attesa che il torneo inizi...</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {Object.entries(gironiData).map(([nomeGirone, squadre]: any) => (
               <div key={nomeGirone} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6 backdrop-blur-sm space-y-4">
-                <h3 className="text-amber-400 font-display font-bold text-lg uppercase tracking-wide border-b border-white/5 pb-2">{nomeGirone}</h3>
+                <h3 className="text-[#ffea00] font-display font-bold text-lg uppercase tracking-wide border-b border-white/5 pb-2">{nomeGirone}</h3>
                 <table className="w-full text-left text-xs font-mono text-zinc-400">
                   <thead>
                     <tr className="text-zinc-600 uppercase text-[10px] border-b border-white/5">
@@ -302,7 +318,7 @@ export default function TournamentRounds() {
                     {squadre.map((s: any, idx: number) => (
                       <tr key={idx}>
                         <td className="py-2.5 font-bold text-white uppercase truncate max-w-[120px]">{s.name}</td>
-                        <td className="py-2.5 text-center font-bold text-amber-400">{s.punti}</td>
+                        <td className="py-2.5 text-center font-bold text-[#ffea00]">{s.punti}</td>
                         <td className="py-2.5 text-center">{s.giocate}</td>
                         <td className={`py-2.5 text-center ${s.dr > 0 ? 'text-green-400' : s.dr < 0 ? 'text-red-400' : ''}`}>{s.dr > 0 ? `+${s.dr}` : s.dr}</td>
                       </tr>
@@ -317,15 +333,15 @@ export default function TournamentRounds() {
 
       {/* MARCATORI */}
       <div className="max-w-2xl mx-auto bg-zinc-900/40 border border-white/5 rounded-3xl p-6 space-y-4">
-        <h2 className="text-xl font-display font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">⚽ Classifica Marcatori</h2>
+        <h2 className="text-xl font-display font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2"> Classifica Marcatori</h2>
         <div className="divide-y divide-white/[0.03] font-mono text-sm text-zinc-300">
           {marcatori.length === 0 ? (
-            <p className="text-center text-zinc-600 text-xs py-4">// In attesa di dati dal foglio "marcatori"...</p>
+            <p className="text-center text-zinc-600 text-xs py-4">"In attesa che il torneo inizi"...</p>
           ) : (
             marcatori.map((m: any, idx: number) => (
               <div key={idx} className="flex justify-between items-center py-2.5 px-2">
                 <span className="text-white font-medium">#{idx + 1} {m.nome} <span className="text-zinc-500 text-xs">({m.squadra})</span></span>
-                <span className="text-amber-400 font-black">{m.gol} GOL</span>
+                <span className="text-[#ffea00] font-black">{m.gol} GOL</span>
               </div>
             ))
           )}
