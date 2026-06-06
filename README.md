@@ -33,5 +33,3 @@ Clona il repository e installa le dipendenze:
 git clone git@github.com:sickselkala/mkc.numen.io.git
 cd mkc.numen.io
 npm install
-### made with ❤️ by sickselkala.
-- react: @cwraffa
