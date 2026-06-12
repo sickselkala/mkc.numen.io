@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const carteBonus = [
   { 
@@ -10,11 +10,6 @@ const carteBonus = [
     titolo: "Rigore Istantaneo", 
     immagine: "/assets/rigore.png", 
     descrizione: "Un calcio di rigore automatico" 
-  },
-  { 
-    titolo: "???????", 
-    immagine: "/assets/segreto.png", 
-    descrizione: "????????" 
   },
   { 
     titolo: "Shootout", 
@@ -35,6 +30,12 @@ const carteBonus = [
     titolo: "Tiro Libero", 
     immagine: "/assets/tirolibero.png", 
     descrizione: "Punizione diretta dalla posizione dei tiri liberi (9 metri)." 
+  },
+  /* La carta segreta è stata spostata ufficialmente alla fine dell'array */
+  { 
+    titolo: "???????", 
+    immagine: "/assets/segreto.png", 
+    descrizione: "?????????" 
   }
 ];
 
@@ -42,13 +43,16 @@ export default function CardsCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  
+  // Ref per tracciare l'inizio del touch su mobile
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const changeCard = (newIndex: number, dir: 'next' | 'prev') => {
     if (isAnimating) return;
     setDirection(dir);
     setIsAnimating(true);
     
-    // Tempo dell'animazione di uscita (200ms)
     setTimeout(() => {
       setActiveIndex(newIndex);
       setIsAnimating(false);
@@ -65,78 +69,102 @@ export default function CardsCarousel() {
     changeCard(nextIdx, 'next');
   };
 
+  // Gestione dello Swipe su Mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const diffX = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50; // Distanza minima in pixel per considerare il movimento uno swipe
+
+    if (diffX > minSwipeDistance) {
+      // Swipe verso sinistra -> Prossima carta
+      nextCard();
+    } else if (diffX < -minSwipeDistance) {
+      // Swipe verso destra -> Carta precedente
+      prevCard();
+    }
+
+    // Reset delle coordinate
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   const carta = carteBonus[activeIndex];
 
-  // Calcolo delle classi di scorrimento basate sulla direzione
   const getSlideClass = () => {
     if (!isAnimating) return 'translate-x-0 opacity-100 scale-100';
-    if (direction === 'next') {
-      return '-translate-x-12 opacity-0 scale-95';
-    } else {
-      return 'translate-x-12 opacity-0 scale-95';
-    }
+    return direction === 'next' 
+      ? '-translate-x-12 opacity-0 scale-95' 
+      : 'translate-x-12 opacity-0 scale-95';
   };
 
   return (
-    <div className="relative max-w-xl mx-auto px-4">
+    <div className="relative max-w-xl mx-auto px-2 sm:px-4">
       
-      {/* FRECCE LATERALI MINIMALI */}
+      {/* FRECCIA SINISTRA: Responsivizzata (Interna su Mobile, Esterna su PC via lg:) */}
       <button 
         onClick={prevCard} 
-        className="absolute left-[-70px] top-[40%] -translate-y-1/2 z-20 bg-[#292923] hover:bg-[#ffea00] hover:text-black text-white w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 hover:border-[#ffea00] transition-all font-bold text-lg group shadow-xl"
+        className="absolute left-2 lg:left-[-70px] top-[40%] -translate-y-1/2 z-30 bg-[#292923]/80 backdrop-blur-md lg:bg-[#292923] hover:bg-[#ffea00] hover:text-black text-white w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center border border-white/10 hover:border-[#ffea00] transition-all font-bold text-base lg:text-lg group shadow-2xl"
         aria-label="Carta precedente"
       >
-        {/* Modifica la freccia sinistra */}
         <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
       </button>
 
+      {/* FRECCIA DESTRA: Responsivizzata (Interna su Mobile, Esterna su PC via lg:) */}
       <button 
         onClick={nextCard} 
-        className="absolute right-[-70px] top-[40%] -translate-y-1/2 z-20 bg-[#292923] hover:bg-[#ffea00] hover:text-black text-white w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 hover:border-[#ffea00] transition-all font-bold text-lg group shadow-xl"
+        className="absolute right-2 lg:right-[-70px] top-[40%] -translate-y-1/2 z-30 bg-[#292923]/80 backdrop-blur-md lg:bg-[#292923] hover:bg-[#ffea00] hover:text-black text-white w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center border border-white/10 hover:border-[#ffea00] transition-all font-bold text-base lg:text-lg group shadow-2xl"
         aria-label="Carta successiva"
       >
-        {/* Modifica la freccia destra */}
         <span className="group-hover:translate-x-0.5 transition-transform">→</span>
       </button>
 
-      {/* STRUTTURA DEL CAROSELLO ANIMATA */}
-      <div className="relative flex flex-col items-center justify-center text-center space-y-8">
+      {/* STRUTTURA DEL CAROSELLO ANIMATA CON FUNZIONALITÀ TOUCH */}
+      <div 
+        className="relative flex flex-col items-center justify-center text-center space-y-8 touch-none select-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         
-        {/* Ambient Glow di sfondo fisso e leggero */}
         <div className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#ffea00] opacity-[0.03] blur-[100px] pointer-events-none -z-10"></div>
 
-        {/* CONTENITORE IMMAGINE CON DOPPIO GLOW ESPLOSIVO (LARGHEZZA + INTENSITÀ) */}
-<div className="relative group w-full flex justify-center items-center min-h-[360px]">
-  
-  {/* ALONE NEON DI SFONDO: Diventa gigante, largo e acceso solo in Hover */}
-  <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 bg-[#ffea00] rounded-full 
-    blur-[60px] opacity-0 pointer-events-none -z-10 transition-all duration-300
-    group-hover:opacity-40 group-hover:w-72 group-hover:h-96 group-hover:blur-[80px]
-  `}></div>
+        {/* CONTENITORE IMMAGINE */}
+        <div className="relative group w-full flex justify-center items-center min-h-[360px]">
+          
+          {/* ALONE NEON DI SFONDO */}
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 bg-[#ffea00] rounded-full 
+            blur-[60px] opacity-0 pointer-events-none -z-10 transition-all duration-300
+            group-hover:opacity-40 group-hover:w-72 group-hover:h-96 group-hover:blur-[80px]
+          `}></div>
 
-  {/* IMMAGINE CON LUCE ACCESA SUI BORDI */}
-  <img 
-    src={carta.immagine} 
-    alt={carta.titolo} 
-    className={`w-72 md:w-80 h-auto object-contain transition-all duration-300 ease-out cursor-pointer z-10
-      ${getSlideClass()}
-      
-      /* Stato normale */
-      drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]
+          {/* IMMAGINE DELLA CARTA */}
+          <img 
+            src={carta.immagine} 
+            alt={carta.titolo} 
+            className={`w-64 sm:w-72 md:w-80 h-auto object-contain transition-all duration-300 ease-out cursor-pointer z-10
+              ${getSlideClass()}
+              drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]
+              group-hover:scale-105 
+              group-hover:drop-shadow-[0_0_20px_rgba(255,234,0,0.95)]
+            `}
+          />
+        </div>
 
-      /* Hover sulla carta: luce intensa sui bordi + ingrandimento */
-      group-hover:scale-105 
-      group-hover:drop-shadow-[0_0_20px_rgba(255,234,0,0.95)]
-    `}
-  />
-</div>
-
-        {/* TESTI SOTTO L'IMMAGINE ANIMATI IN SINCRONIA */}
-        <div className={`max-w-md space-y-3 pt-2 transition-all duration-300 ${isAnimating ? 'opacity-0 scale-98' : 'opacity-100 scale-100'}`}>
-          <h3 className="text-3xl font-display font-black uppercase tracking-wider text-[#ffea00]">
+        {/* TESTI SOTTO L'IMMAGINE */}
+        <div className={`max-w-xs sm:max-w-md space-y-3 pt-2 transition-all duration-300 ${isAnimating ? 'opacity-0 scale-98' : 'opacity-100 scale-100'}`}>
+          <h3 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-wider text-[#ffea00]">
             {carta.titolo}
           </h3>
-          <p className="font-mono text-sm text-[#ffffff]/80 leading-relaxed min-h-[60px]">
+          <p className="font-mono text-xs sm:text-sm text-[#ffffff]/80 leading-relaxed min-h-[70px] px-2">
             {carta.descrizione}
           </p>
           <div className="text-[10px] font-mono uppercase text-[#ffffff]/30 tracking-widest pt-2">
@@ -156,6 +184,7 @@ export default function CardsCarousel() {
               }
             }} 
             className={`h-1.5 transition-all rounded-full ${activeIndex === idx ? 'w-6 bg-[#ffea00]' : 'w-1.5 bg-[#ffffff]/20'}`} 
+            aria-label={`Vai alla carta ${idx + 1}`}
           />
         ))}
       </div>
