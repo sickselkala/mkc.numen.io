@@ -33,9 +33,9 @@ const carteBonus = [
   },
   /* La carta segreta è stata spostata ufficialmente alla fine dell'array */
   { 
-    titolo: "???????", 
-    immagine: "/assets/segreto.png", 
-    descrizione: "?????????" 
+    titolo: "Reverse Penalty", 
+    immagine: "/assets/reversepenalty.png", 
+    descrizione: "Permette a una squadra di far tirare un rigore a un avversario scelto. Se segna il gol non conta. Se sbaglia, il gol viene assegnato alla squadra che ha giocato la carta" 
   }
 ];
 
