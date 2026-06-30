@@ -22,13 +22,13 @@ const DATE_TORNEO = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/0
 
 // Mappatura colori per la classifica marcatori
 const COLOR_MAP: Record<string, string> = {
-  'Godo Glimt': 'rgba(204, 161, 0, 0.15)',        // Giallo scuro
-  'Sold Out': 'rgba(127, 0, 0, 0.25)',           // Rosso scuro
-  'Talamonti Garden': 'rgba(6, 78, 59, 0.25)',    // Verde
-  'Bar Igloo': 'rgba(255, 255, 255, 0.08)',      // Bianco (faint)
-  'ASD Polisportiva Forcese': 'rgba(30, 58, 138, 0.25)', // Blu
-  'Edil Pennello Fc': 'rgba(3, 105, 161, 0.25)',  // Azzurro
-  'Club': 'rgba(63, 63, 70, 0.4)',               // Grigio
+  'Godo Glimt': 'rgba(204, 161, 0, 0.15)',        
+  'Sold Out': 'rgba(127, 0, 0, 0.25)',           
+  'Talamonti Garden': 'rgba(6, 78, 59, 0.25)',    
+  'Bar Igloo': 'rgba(255, 255, 255, 0.08)',      
+  'ASD Polisportiva Forcese': 'rgba(30, 58, 138, 0.25)', 
+  'Edil Pennello Fc': 'rgba(3, 105, 161, 0.25)',  
+  'Club': 'rgba(63, 63, 70, 0.4)',               
 };
 
 // Helper per generare il percorso del logo
@@ -84,20 +84,19 @@ export default function TournamentRounds() {
   const [classifica, setClassifica] = useState<any[]>([]);
   const [partite, setPartite] = useState<any[]>([]);
   const [marcatori, setMarcatori] = useState<any[]>([]);
-  const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null);
+  
+  const [toggledMatches, setToggledMatches] = useState<Record<number, boolean>>({});
 
-  // Selezione automatica della data odierna se presente nel torneo
   const [dataAttiva, setDataAttiva] = useState<string>(() => {
     const oggi = new Date();
     const giorno = String(oggi.getDate()).padStart(2, '0');
     const mese = String(oggi.getMonth() + 1).padStart(2, '0');
-    const dataFormattata = `${giorno}/${mese}`; // Genera "30/06"
-    
+    const dataFormattata = `${giorno}/${mese}`;
     return DATE_TORNEO.includes(dataFormattata) ? dataFormattata : '28/06';
   });
 
   useEffect(() => {
-    setExpandedMatchId(null);
+    setToggledMatches({});
   }, [dataAttiva]);
 
   useEffect(() => {
@@ -188,25 +187,30 @@ export default function TournamentRounds() {
       <div className="space-y-6 text-center">
         <div className="flex flex-wrap justify-center gap-2 md:gap-4">
           {DATE_TORNEO.map((data) => (
-            <button key={data} onClick={() => setDataAttiva(data)} className={`px-4 py-2 rounded-xl font-display font-bold text-xs uppercase tracking-widest transition-all ${dataAttiva === data ? 'bg-[#ffea00] text-black shadow-lg shadow-[#ffea00]/20' : 'bg-zinc-900/80 text-zinc-400 border border-white/5 hover:bg-zinc-800'}`}>
+            <button key={data} onClick={() => setDataAttiva(data)} className={`px-4 py-2 rounded-xl font-display font-bold text-xs uppercase tracking-widest transition-colors ${dataAttiva === data ? 'bg-[#ffea00] text-black shadow-lg shadow-[#ffea00]/20' : 'bg-zinc-900/80 text-zinc-400 border border-white/5 hover:bg-zinc-800'}`}>
               {data}
             </button>
           ))}
         </div>
+        
+        {/* Griglia delle partite */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
           {partiteFiltrate.map((p, idx) => {
             const isGiocata = p.golsquadra1 !== null && p.golsquadra2 !== null;
-            const isExpanded = expandedMatchId === idx;
+            const hasDetails = Boolean(p.dettagliA || p.dettagliB || p.doppiA || p.doppiB || p.mvp);
+            const isExpanded = isGiocata && (toggledMatches[idx] !== undefined ? toggledMatches[idx] : hasDetails);
 
             return (
               <div 
                 key={idx} 
-                onClick={() => isGiocata && setExpandedMatchId(isExpanded ? null : idx)}
-                className={`flex flex-col justify-between p-5 bg-zinc-900/60 rounded-2xl border transition-all backdrop-blur-sm space-y-3 ${
-                  isGiocata ? 'cursor-pointer hover:bg-zinc-900/80' : ''
+                onClick={() => isGiocata && setToggledMatches(prev => ({...prev, [idx]: !isExpanded}))}
+                // H-FIT e rimozione space-y-3 impediscono alle schede di dilatarsi per via della griglia e creano compattezza
+                className={`flex flex-col p-5 bg-zinc-900 rounded-2xl border transition-colors duration-200 h-fit ${
+                  isGiocata ? 'cursor-pointer hover:bg-zinc-800' : ''
                 } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'}`}
               >
-                <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase">
+                {/* Intestazione */}
+                <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-3">
                   <span>Girone Unico • {p.dataMatch}</span>
                   <div className="flex items-center gap-2">
                     {isGiocata && (
@@ -214,15 +218,17 @@ export default function TournamentRounds() {
                         {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
                       </span>
                     )}
-                    <span className="text-[#ffea00]/80 font-bold">Campo Sportivo Lorenzo Paolucci</span>
+                    <span className="text-[#ffea00]/80 font-bold">L. Paolucci</span>
                   </div>
                 </div>
                 
+                {/* Risultato e Squadre */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 w-5/12 min-w-0">
-                    <img src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
-                    <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra1}</span>
+                  <div className="flex items-center gap-2 w-5/12 text-left">
+                    <img loading="lazy" decoding="async" src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+                    <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra1}</span>
                   </div>
+
                   {isGiocata ? (
                     <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
                       <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
@@ -230,48 +236,54 @@ export default function TournamentRounds() {
                   ) : (
                     <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">⏱️ {p.orario}</div>
                   )}
-                  <div className="flex items-center justify-end gap-2 w-5/12 min-w-0 text-right">
-                    <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra2}</span>
-                    <img src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+
+                  <div className="flex items-center justify-end gap-2 w-5/12 text-right">
+                    <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra2}</span>
+                    <img loading="lazy" decoding="async" src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
                   </div>
                 </div>
 
-                {/* BLOCCO DETTAGLI INTERATTIVI */}
-                {isGiocata && isExpanded && (
-                  <div className="mt-2 pt-2 border-t border-white/5 space-y-4 text-[11px] font-mono transition-all">
-                    <div className="grid grid-cols-2 gap-4 pt-1">
-                      
-                      {/* SQUADRA SINISTRA (A) */}
-                      <div className="border-r border-white/5 pr-2 space-y-2">
-                        <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed">{p.dettagliA || '-'}</p>
-                        {p.doppiA && (
-                          <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-left max-w-full">
-                            <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5"> GOL DOPPI</span>
-                            <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiA}</p>
+                {/* ANIMAZIONE A TENDINA: Usa il CSS Grid per animare height fluidamente tra 0 e max */}
+                {isGiocata && (
+                  <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                    <div className="overflow-hidden">
+                      {hasDetails ? (
+                        <div className="mt-3 pt-3 border-t border-white/5 space-y-4 text-[11px] font-mono">
+                          <div className="grid grid-cols-2 gap-4 pt-1">
+                            <div className="border-r border-white/5 pr-2 space-y-2">
+                              <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed">{p.dettagliA || '-'}</p>
+                              {p.doppiA && (
+                                <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-left max-w-full">
+                                  <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5"> GOL DOPPI</span>
+                                  <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiA}</p>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="pl-1 space-y-2 text-right flex flex-col items-end">
+                              <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed w-full">{p.dettagliB || '-'}</p>
+                              {p.doppiB && (
+                                <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-right max-w-full">
+                                  <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5">GOL DOPPI</span>
+                                  <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiB}</p>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      
-                      {/* SQUADRA DESTRA (B) */}
-                      <div className="pl-1 space-y-2 text-right flex flex-col items-end">
-                        <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed w-full">{p.dettagliB || '-'}</p>
-                        {p.doppiB && (
-                          <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-right max-w-full">
-                            <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5">GOL DOPPI</span>
-                            <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiB}</p>
-                          </div>
-                        )}
-                      </div>
 
+                          {p.mvp && (
+                            <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 rounded-xl p-2.5 flex items-center justify-between gap-2">
+                              <span className="text-[9px] uppercase tracking-wider text-[#ffea00]/80 font-bold">⭐ MVP</span>
+                              <span className="text-white font-bold text-xs uppercase tracking-wide">{p.mvp}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="mt-3 pt-3 border-t border-white/5 text-center text-zinc-500 text-[10px] font-mono italic">
+                          Nessun dettaglio extra disponibile per questo match
+                        </div>
+                      )}
                     </div>
-
-                    {/* MVP BOX */}
-                    {p.mvp && (
-                      <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 rounded-xl p-2.5 flex items-center justify-between gap-2">
-                        <span className="text-[9px] uppercase tracking-wider text-[#ffea00]/80 font-bold">⭐ MVP</span>
-                        <span className="text-white font-bold text-xs uppercase tracking-wide">{p.mvp}</span>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -283,7 +295,7 @@ export default function TournamentRounds() {
       {/* CLASSIFICA GENERALE */}
       <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="text-2xl font-display font-black text-white text-center uppercase tracking-wider">Classifica Generale</h2>
-        <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-4 md:p-6 backdrop-blur-sm shadow-xl">
+        <div className="bg-zinc-900 border border-white/5 rounded-3xl p-4 md:p-6 shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs md:text-sm font-mono text-zinc-400 min-w-[500px]">
               <thead>
@@ -295,10 +307,10 @@ export default function TournamentRounds() {
                 {classifica.map((s: any, idx: number) => (
                   <tr key={idx} className={`transition-colors ${idx < 4 ? 'bg-[#ffea00]/[0.02]' : ''}`}>
                     <td className={`py-3 pl-2 font-bold ${idx < 4 ? 'text-[#ffea00]' : 'text-zinc-500'}`}>#{idx + 1}</td>
-                    <td className="py-3 font-bold text-white uppercase truncate max-w-[160px]">
+                    <td className="py-3 font-bold text-white uppercase max-w-[160px] whitespace-normal leading-tight">
                       <div className="flex items-center gap-2">
-                        <img src={getLogoPath(s.name)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-4 h-4 object-contain" />
-                        <span className="truncate">{s.name}</span>
+                        <img loading="lazy" decoding="async" src={getLogoPath(s.name)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-4 h-4 object-contain shrink-0" />
+                        <span>{s.name}</span>
                       </div>
                     </td>
                     <td className="py-3 text-center font-black text-base text-[#ffea00]">{s.punti}</td>
@@ -329,7 +341,7 @@ export default function TournamentRounds() {
               return (
                 <div 
                   key={idx} 
-                  className="relative overflow-hidden rounded-2xl border border-white/5 backdrop-blur-md transition-transform hover:scale-[1.01]"
+                  className="relative overflow-hidden rounded-2xl border border-white/5 transition-transform hover:scale-[1.01]"
                   style={{ backgroundColor: teamColor }}
                 >
                   <div 
@@ -348,17 +360,19 @@ export default function TournamentRounds() {
                         {idx + 1}
                       </span>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-white font-bold text-sm md:text-base truncate uppercase tracking-wide">
+                        <span className="text-white font-bold text-sm md:text-base uppercase tracking-wide leading-tight break-words">
                           {m.nome}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mt-0.5">
                           <img 
+                            loading="lazy"
+                            decoding="async"
                             src={teamLogo} 
                             alt="" 
                             onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }}
-                            className="w-3.5 h-3.5 object-contain" 
+                            className="w-3.5 h-3.5 object-contain shrink-0" 
                           />
-                          <span className="text-[10px] font-mono uppercase text-zinc-300 tracking-widest truncate">
+                          <span className="text-[10px] font-mono uppercase text-zinc-300 tracking-widest break-words leading-tight">
                             {m.squadra}
                           </span>
                         </div>
