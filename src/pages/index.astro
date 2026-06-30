@@ -11,19 +11,19 @@ import MkcLayout from '../layouts/MkcLayout.astro';
       
       {/* 1. LAMA DI LUCE ORO ROTANTE VELOCE */}
       <div 
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]" transform-gpu will-change-transform
         style="background: linear-gradient(135deg, transparent 40%, rgba(255,234,0,0.8) 50%, transparent 60%); filter: blur(55px);"
       ></div>
 
       {/* 2. SECONDA LAMA CONTRO-ROTANTE VELOCIZZATA */}
       <div 
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]" transform-gpu will-change-transform 
         style="background: linear-gradient(45deg, transparent 42%, rgba(212,175,55,0.7) 50%, transparent 58%); filter: blur(45px); animation-direction: reverse;"
       ></div>
 
       {/* 3. SPRAZZO IN ALTO A SINISTRA */}
       <div 
-        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_2.5s_ease-in-out_infinite]"
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_2.5s_ease-in-out_infinite]" transform-gpu will-change-transform
         style="
           top: -20%;
           left: -15%;
@@ -33,7 +33,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       {/* 4. SPRAZZO IN BASSO A DESTRA */}
       <div 
-        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_3s_ease-in-out_infinite]"
+        class="absolute w-[650px] h-[650px] rounded-full mix-blend-color-dodge animate-[pulse_3s_ease-in-out_infinite]" transform-gpu will-change-transform
         style="
           bottom: -20%;
           right: -15%;
@@ -44,7 +44,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       {/* 5. FARO LATERALE AD ALTA VELOCITÀ */}
       <div 
-        class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-40 animate-[bounce_5s_infinite]"
+        class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-40 animate-[bounce_5s_infinite]" transform-gpu will-change-transform
         style="
           top: 25%;
           right: -10%;
@@ -55,7 +55,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       {/* 6. SPRAZZO IN ALTO A DESTRA */}
       <div 
-        class="absolute w-[450px] h-[450px] rounded-full mix-blend-color-dodge animate-[pulse_2s_ease-in-out_infinite]"
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-color-dodge animate-[pulse_2s_ease-in-out_infinite]" transform-gpu will-change-transform
         style="
           top: -10%;
           right: -5%;
@@ -66,7 +66,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       {/* 7. SPRAZZO IN BASSO A SINISTRA */}
       <div 
-        class="absolute w-[450px] h-[450px] rounded-full mix-blend-screen animate-[pulse_3.5s_ease-in-out_infinite]"
+        class="absolute w-[450px] h-[450px] rounded-full mix-blend-screen animate-[pulse_3.5s_ease-in-out_infinite]" transform-gpu will-change-transform
         style="
           bottom: -10%;
           left: -5%;
@@ -77,7 +77,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       {/* 8. BAGLIORE CENTRALE DI SFONDO */}
       <div 
-        class="absolute top-[20%] left-[15%] w-[650px] h-[650px] rounded-full mix-blend-screen animate-[pulse_4s_ease-in-out_infinite]"
+        class="absolute top-[20%] left-[15%] w-[650px] h-[650px] rounded-full mix-blend-screen animate-[pulse_4s_ease-in-out_infinite]" transform-gpu will-change-transform
         style="
           background: radial-gradient(circle, rgba(255,234,0,0.15) 0%, transparent 60%);
           filter: blur(40px);
@@ -86,7 +86,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
       ></div>
 
       {/* STRUTTURA GEOMETRICA DI RIFRAZIONE ACCESA */}
-      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]" transform-gpu will-change-transform></div>
     </div>
 
     {/* CONTENUTO CENTRATO */}
@@ -152,40 +152,29 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
       <hr class="border-white/5 max-w-xl mx-auto my-4" />
 
-      {/* NUOVA SEZIONE: ISCRIZIONI ANCORA APERTE */}
+      {/* NUOVA SEZIONE: IL TORNEO E' INIZIATO */}
       <div class="bg-[#121210]/95 backdrop-blur-md border border-[#ffea00]/20 rounded-2xl p-6 md:p-8 space-y-6 text-center shadow-[0_0_30px_rgba(255,234,0,0.05)] max-w-5xl mx-auto">
         <div class="space-y-2">
           <span class="font-mono text-xs uppercase tracking-widest text-[#ffea00]/80 font-bold bg-[#ffea00]/10 px-3 py-1 rounded-full inline-block animate-pulse">
-            Invia la tua candidatura
+            🔴 Live Now
           </span>
           <h2 class="text-2xl md:text-3xl font-display font-black uppercase tracking-wider text-white">
-            Le Iscrizioni sono ancora aperte!
+            Il Torneo è Iniziato!
           </h2>
           <p class="text-sm md:text-base font-mono text-[#ffea00] font-bold tracking-wide">
-            Chiusura Iscrizioni: 20 giugno 2026
+            Segui l'andamento del girone, i risultati in tempo reale e i marcatori
           </p>
         </div>
 
-        {/* BOTTONI DOWNLOAD MODULI */}
-        <div class="flex flex-wrap justify-center gap-4 pt-2">
+        {/* BOTTONE CLASSIFICHE E RISULTATI */}
+        <div class="flex flex-wrap justify-center pt-2">
           <a 
-            href="/assets/ISCRIZIONE.pdf" 
-            download
-            class="flex items-center justify-center gap-3 px-6 py-3.5 bg-[#1c1c18] border border-white/10 hover:border-[#ffea00] text-white font-mono text-xs uppercase tracking-wider rounded-xl transition-all hover:bg-[#ffea00] hover:text-black hover:scale-[1.02] group w-full sm:w-auto text-center"
+            href="/classifiche" 
+            class="flex items-center justify-center gap-3 px-8 py-4 bg-[#ffea00] text-black font-display font-black uppercase text-sm tracking-widest rounded-xl hover:bg-white hover:scale-[1.03] transition-all shadow-[0_0_20px_rgba(255,234,0,0.3)] group w-full sm:w-auto text-center"
           >
-            <span>Scarica ISCRIZIONE.pdf</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-[#ffea00] group-hover:text-black transition-colors">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-          </a>
-          <a 
-            href="/assets/ISCRIZIONEMINORI.pdf" 
-            download
-            class="flex items-center justify-center gap-3 px-6 py-3.5 bg-[#1c1c18] border border-white/10 hover:border-[#ffea00] text-white font-mono text-xs uppercase tracking-wider rounded-xl transition-all hover:bg-[#ffea00] hover:text-black hover:scale-[1.02] group w-full sm:w-auto text-center"
-          >
-            <span>Scarica ISCRIZIONEMINORI.pdf</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-[#ffea00] group-hover:text-black transition-colors">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            <span>Guarda Classifiche e Risultati</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 group-hover:translate-x-1 transition-transform">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
           </a>
         </div>
@@ -193,8 +182,8 @@ import MkcLayout from '../layouts/MkcLayout.astro';
         {/* NOTA INFORMATIVA */}
         <div class="border-t border-white/5 pt-4 max-w-2xl mx-auto">
           <p class="text-xs md:text-sm font-sans text-white/70 leading-relaxed">
-            <span class="text-[#ffea00] font-bold uppercase tracking-wider text-xs block mb-1">Nota bene</span>
-            Per ogni giocatore e presidente è necessario il certificato medico agonistico o non agonistico.
+            <span class="text-[#ffea00] font-bold uppercase tracking-wider text-xs block mb-1">Campo Sportivo Lorenzo Paolucci, Santa Vittoria in Matenano</span>
+            Tutte le sere dal 28 Giugno. Vivi lo spettacolo.
           </p>
         </div>
       </div>

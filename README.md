@@ -1,30 +1,35 @@
-# 🏆 Matenano Kings Cup - Official Website
+# 🏆 Matenano Kings Cup (MKC) - Sito Ufficiale
 
-Il portale ufficiale della **Matenano Kings Cup**, il torneo estivo di punta organizzato dall'Associazione Giovanile **Numen APS** a Santa Vittoria in Matenano (FM).
+Benvenuto nel repository ufficiale del sito web per la **Matenano Kings Cup (MKC)**, organizzato dall'associazione **Numen APS**.
 
-Questo repository contiene il codice sorgente per il sottodominio `mkc.numenaps.it`. Il sito è progettato per offrire un'esperienza premium, veloce e fluida, pensata per informare atleti e tifosi su calendari, gironi, classifiche e statistiche del torneo.
+🌐 **Sito Live:** [mkc.numenaps.it](https://mkc.numenaps.it)
 
-## 🚀 Tech Stack
+---
 
-Il progetto è costruito con le tecnologie web più moderne per garantire performance estreme e un design impattante:
+## 💻 Stack Tecnologico
 
-- **Framework:** [Astro](https://astro.build/) (v6.x) - Per una generazione di siti statici (SSG) superveloce.
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (v3.4) - Framework CSS utility-first.
-- **Animazioni Scroll:** [AOS (Animate On Scroll)](https://michalsnik.github.io/aos/) - Per far emergere gli elementi durante lo scorrimento.
-- **Smooth Scroll:** [Lenis](https://lenis.studiofreight.com/) - Per un'esperienza di navigazione "effetto burro" e premium.
-- **Hosting & CI/CD:** [Cloudflare Pages](https://pages.cloudflare.com/) - Deploy automatico dal branch `main`.
+Questo progetto è costruito per garantire alte prestazioni e un flusso di sviluppo moderno:
 
-## 📂 Struttura del Progetto
+- **[Astro](https://astro.build/):** Framework principale per la generazione statica e la velocità estrema.
+- **[React](https://react.dev/):** Per i componenti interattivi avanzati (es. tabelloni e gironi del torneo).
+- **[Tailwind CSS](https://tailwindcss.com/):** Per uno styling rapido, coerente e completamente responsive.
+- **[Cloudflare Pages](https://pages.cloudflare.com/):** Hosting globale e pipeline di Continuous Integration/Continuous Deployment (CI/CD).
+- **[Cloudflare KV](https://developers.cloudflare.com/kv/):** Database serverless utilizzato per lo storage rapido e la gestione delle sessioni.
 
-```text
-/
-├── public/
-│   └── assets/           # Immagini, loghi (es. mkc-bg.jpg, mkc-logo-big.png)
-├── src/
-│   ├── components/       # Componenti UI riutilizzabili (Navbar.astro, Footer.astro)
-│   ├── layouts/          # Layout principale (MkcLayout.astro) con logica Lenis/AOS
-│   └── pages/            # Pagine del sito (index, iltorneo, classifiche, albo)
-├── astro.config.mjs      # Configurazione di base di Astro
-├── tailwind.config.mjs   # Temi, font e configurazioni di Tailwind
-├── package.json          # Dipendenze e script npm
-└── .npmrc                # Regole di risoluzione dipendenze per Cloudflare Pages
+---
+
+## 🚀 Guida allo Sviluppo Locale
+
+Sei un collaboratore? Segui questi passaggi per avviare il progetto sul tuo computer:
+
+### 1. Prerequisiti
+Assicurati di avere installato:
+- **Node.js** (versione 22 o superiore consigliata)
+- **Git**
+
+### 2. Installazione
+Clona il repository e installa le dipendenze:
+```bash
+git clone git@github.com:sickselkala/mkc.numen.io.git
+cd mkc.numen.io
+npm install
