@@ -17,6 +17,9 @@ const SQUADRE_UFFICIALI = [
   'Club'
 ];
 
+// Date ufficiali del torneo
+const DATE_TORNEO = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07'];
+
 // Mappatura colori per la classifica marcatori
 const COLOR_MAP: Record<string, string> = {
   'Godo Glimt': 'rgba(204, 161, 0, 0.15)',        // Giallo scuro
@@ -81,8 +84,21 @@ export default function TournamentRounds() {
   const [classifica, setClassifica] = useState<any[]>([]);
   const [partite, setPartite] = useState<any[]>([]);
   const [marcatori, setMarcatori] = useState<any[]>([]);
-  const [dataAttiva, setDataAttiva] = useState<string>('28/06');
-  const dateTorneo = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07'];
+  const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null);
+
+  // Selezione automatica della data odierna se presente nel torneo
+  const [dataAttiva, setDataAttiva] = useState<string>(() => {
+    const oggi = new Date();
+    const giorno = String(oggi.getDate()).padStart(2, '0');
+    const mese = String(oggi.getMonth() + 1).padStart(2, '0');
+    const dataFormattata = `${giorno}/${mese}`; // Genera "30/06"
+    
+    return DATE_TORNEO.includes(dataFormattata) ? dataFormattata : '28/06';
+  });
+
+  useEffect(() => {
+    setExpandedMatchId(null);
+  }, [dataAttiva]);
 
   useEffect(() => {
     async function loadAllData() {
@@ -105,7 +121,20 @@ export default function TournamentRounds() {
             const golA = row[4] !== undefined && row[4] !== '' ? Number(row[4]) : null;
             const golB = row[5] !== undefined && row[5] !== '' ? Number(row[5]) : null;
             const vO = row[6] ? row[6].toString().trim() : '';
-            listaPartite.push({ dataMatch, squadra1: sA, squadra2: sB, golsquadra1: golA, golsquadra2: golB, orario: row[7] || 'Da definire' });
+            
+            listaPartite.push({ 
+              dataMatch, 
+              squadra1: sA, 
+              squadra2: sB, 
+              golsquadra1: golA, 
+              golsquadra2: golB, 
+              orario: row[7] || 'Da definire',
+              dettagliA: row[8] ? row[8].toString().trim() : '',   
+              dettagliB: row[9] ? row[9].toString().trim() : '',   
+              mvp: row[10] ? row[10].toString().trim() : '',
+              doppiA: row[11] ? row[11].toString().trim() : '', 
+              doppiB: row[12] ? row[12].toString().trim() : ''  
+            });
 
             if (golA === null || golB === null) continue;
             [sA, sB].forEach(s => { if (!dizionarioClassifica[s]) dizionarioClassifica[s] = { name: s, punti: 0, giocate: 0, vinte: 0, nulle: 0, perse: 0, gf: 0, gs: 0, dr: 0 }; });
@@ -158,38 +187,96 @@ export default function TournamentRounds() {
       {/* CALENDARIO */}
       <div className="space-y-6 text-center">
         <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-          {dateTorneo.map((data) => (
+          {DATE_TORNEO.map((data) => (
             <button key={data} onClick={() => setDataAttiva(data)} className={`px-4 py-2 rounded-xl font-display font-bold text-xs uppercase tracking-widest transition-all ${dataAttiva === data ? 'bg-[#ffea00] text-black shadow-lg shadow-[#ffea00]/20' : 'bg-zinc-900/80 text-zinc-400 border border-white/5 hover:bg-zinc-800'}`}>
               {data}
             </button>
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
-          {partiteFiltrate.map((p, idx) => (
-            <div key={idx} className="flex flex-col justify-between p-5 bg-zinc-900/60 rounded-2xl border border-white/5 backdrop-blur-sm space-y-3">
-              <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase">
-                <span>Girone Unico • {p.dataMatch}</span>
-                <span className="text-[#ffea00]/80 font-bold">📍 MKC Arena</span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 w-5/12 min-w-0">
-                  <img src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
-                  <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra1}</span>
-                </div>
-                {p.golsquadra1 !== null ? (
-                  <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
-                    <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
+          {partiteFiltrate.map((p, idx) => {
+            const isGiocata = p.golsquadra1 !== null && p.golsquadra2 !== null;
+            const isExpanded = expandedMatchId === idx;
+
+            return (
+              <div 
+                key={idx} 
+                onClick={() => isGiocata && setExpandedMatchId(isExpanded ? null : idx)}
+                className={`flex flex-col justify-between p-5 bg-zinc-900/60 rounded-2xl border transition-all backdrop-blur-sm space-y-3 ${
+                  isGiocata ? 'cursor-pointer hover:bg-zinc-900/80' : ''
+                } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'}`}
+              >
+                <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase">
+                  <span>Girone Unico • {p.dataMatch}</span>
+                  <div className="flex items-center gap-2">
+                    {isGiocata && (
+                      <span className="text-zinc-400 text-[9px] bg-white/5 px-1.5 py-0.5 rounded tracking-normal">
+                        {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
+                      </span>
+                    )}
+                    <span className="text-[#ffea00]/80 font-bold">📍 MKC Arena</span>
                   </div>
-                ) : (
-                  <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">⏱️ {p.orario}</div>
-                )}
-                <div className="flex items-center justify-end gap-2 w-5/12 min-w-0 text-right">
-                  <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra2}</span>
-                  <img src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
                 </div>
+                
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 w-5/12 min-w-0">
+                    <img src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+                    <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra1}</span>
+                  </div>
+                  {isGiocata ? (
+                    <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
+                      <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
+                    </div>
+                  ) : (
+                    <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">⏱️ {p.orario}</div>
+                  )}
+                  <div className="flex items-center justify-end gap-2 w-5/12 min-w-0 text-right">
+                    <span className="text-xs md:text-sm font-bold text-white uppercase truncate">{p.squadra2}</span>
+                    <img src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+                  </div>
+                </div>
+
+                {/* BLOCCO DETTAGLI INTERATTIVI */}
+                {isGiocata && isExpanded && (
+                  <div className="mt-2 pt-2 border-t border-white/5 space-y-4 text-[11px] font-mono transition-all">
+                    <div className="grid grid-cols-2 gap-4 pt-1">
+                      
+                      {/* SQUADRA SINISTRA (A) */}
+                      <div className="border-r border-white/5 pr-2 space-y-2">
+                        <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed">{p.dettagliA || '-'}</p>
+                        {p.doppiA && (
+                          <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-left max-w-full">
+                            <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5"> GOL DOPPI</span>
+                            <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiA}</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* SQUADRA DESTRA (B) */}
+                      <div className="pl-1 space-y-2 text-right flex flex-col items-end">
+                        <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed w-full">{p.dettagliB || '-'}</p>
+                        {p.doppiB && (
+                          <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-right max-w-full">
+                            <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5">GOL DOPPI</span>
+                            <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiB}</p>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+
+                    {/* MVP BOX */}
+                    {p.mvp && (
+                      <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 rounded-xl p-2.5 flex items-center justify-between gap-2">
+                        <span className="text-[9px] uppercase tracking-wider text-[#ffea00]/80 font-bold">⭐ MVP</span>
+                        <span className="text-white font-bold text-xs uppercase tracking-wide">{p.mvp}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -228,9 +315,9 @@ export default function TournamentRounds() {
         </div>
       </div>
 
-      {/* CLASSIFICA MARCATORI (MODIFICATA CON COLORI E LOGHI SFONDO) */}
+      {/* CLASSIFICA MARCATORI */}
       <div className="max-w-2xl mx-auto space-y-6">
-        <h2 className="text-xl font-display font-bold text-white uppercase tracking-wider text-center"> Classifica Marcatori</h2>
+        <h2 className="text-xl font-display font-bold text-white uppercase tracking-wider text-center">🏆 Classifica Marcatori</h2>
         <div className="grid gap-3">
           {marcatori.length === 0 ? (
             <p className="text-center text-zinc-600 text-xs py-4 italic">In attesa dei primi gol...</p>
@@ -245,7 +332,6 @@ export default function TournamentRounds() {
                   className="relative overflow-hidden rounded-2xl border border-white/5 backdrop-blur-md transition-transform hover:scale-[1.01]"
                   style={{ backgroundColor: teamColor }}
                 >
-                  {/* Logo in Filigrana sullo Sfondo */}
                   <div 
                     className="absolute right-[-20px] top-1/2 -translate-y-1/2 w-32 h-32 opacity-[0.08] pointer-events-none grayscale brightness-200"
                     style={{ 
