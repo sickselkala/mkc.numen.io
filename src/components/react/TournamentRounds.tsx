@@ -214,7 +214,7 @@ export default function TournamentRounds() {
                         {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
                       </span>
                     )}
-                    <span className="text-[#ffea00]/80 font-bold">📍 MKC Arena</span>
+                    <span className="text-[#ffea00]/80 font-bold">Campo Sportivo Lorenzo Paolucci</span>
                   </div>
                 </div>
                 
