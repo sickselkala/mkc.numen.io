@@ -18,7 +18,7 @@ const SQUADRE_UFFICIALI = [
 ];
 
 // Date ufficiali del torneo
-const DATE_TORNEO = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07'];
+const DATE_TORNEO = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07', '07/07', '08/07', '10/07'];
 
 // Mappatura colori per la classifica marcatori
 const COLOR_MAP: Record<string, string> = {
@@ -195,103 +195,163 @@ export default function TournamentRounds() {
         
         {/* Griglia delle partite */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
-          {partiteFiltrate.map((p, idx) => {
-            const isGiocata = p.golsquadra1 !== null && p.golsquadra2 !== null;
-            const hasDetails = Boolean(p.dettagliA || p.dettagliB || p.doppiA || p.doppiB || p.mvp);
-            const isExpanded = isGiocata && (toggledMatches[idx] !== undefined ? toggledMatches[idx] : hasDetails);
+          {partiteFiltrate.length > 0 ? (
+            partiteFiltrate.map((p, idx) => {
+              const isGiocata = p.golsquadra1 !== null && p.golsquadra2 !== null;
+              const hasDetails = Boolean(p.dettagliA || p.dettagliB || p.doppiA || p.doppiB || p.mvp);
+              const isExpanded = isGiocata && (toggledMatches[idx] !== undefined ? toggledMatches[idx] : hasDetails);
 
-            return (
-              <div 
-                key={idx} 
-                onClick={() => isGiocata && setToggledMatches(prev => ({...prev, [idx]: !isExpanded}))}
-                // H-FIT e rimozione space-y-3 impediscono alle schede di dilatarsi per via della griglia e creano compattezza
-                className={`flex flex-col p-5 bg-zinc-900 rounded-2xl border transition-colors duration-200 h-fit ${
-                  isGiocata ? 'cursor-pointer hover:bg-zinc-800' : ''
-                } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'}`}
-              >
-                {/* Intestazione */}
-                <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-3">
-                  <span>Girone Unico • {p.dataMatch}</span>
-                  <div className="flex items-center gap-2">
-                    {isGiocata && (
-                      <span className="text-zinc-400 text-[9px] bg-white/5 px-1.5 py-0.5 rounded tracking-normal">
-                        {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
-                      </span>
-                    )}
-                    <span className="text-[#ffea00]/80 font-bold">L. Paolucci</span>
-                  </div>
-                </div>
-                
-                {/* Risultato e Squadre */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 w-5/12 text-left">
-                    <img loading="lazy" decoding="async" src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
-                    <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra1}</span>
-                  </div>
-
-                  {isGiocata ? (
-                    <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
-                      <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
-                    </div>
-                  ) : (
-                    <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">⏱️ {p.orario}</div>
-                  )}
-
-                  <div className="flex items-center justify-end gap-2 w-5/12 text-right">
-                    <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra2}</span>
-                    <img loading="lazy" decoding="async" src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
-                  </div>
-                </div>
-
-                {/* ANIMAZIONE A TENDINA: Usa il CSS Grid per animare height fluidamente tra 0 e max */}
-                {isGiocata && (
-                  <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                    <div className="overflow-hidden">
-                      {hasDetails ? (
-                        <div className="mt-3 pt-3 border-t border-white/5 space-y-4 text-[11px] font-mono">
-                          <div className="grid grid-cols-2 gap-4 pt-1">
-                            <div className="border-r border-white/5 pr-2 space-y-2">
-                              <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed">{p.dettagliA || '-'}</p>
-                              {p.doppiA && (
-                                <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-left max-w-full">
-                                  <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5"> GOL DOPPI</span>
-                                  <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiA}</p>
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="pl-1 space-y-2 text-right flex flex-col items-end">
-                              <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed w-full">{p.dettagliB || '-'}</p>
-                              {p.doppiB && (
-                                <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-right max-w-full">
-                                  <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5">GOL DOPPI</span>
-                                  <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiB}</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {p.mvp && (
-                            <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 rounded-xl p-2.5 flex items-center justify-between gap-2">
-                              <span className="text-[9px] uppercase tracking-wider text-[#ffea00]/80 font-bold">⭐ MVP</span>
-                              <span className="text-white font-bold text-xs uppercase tracking-wide">{p.mvp}</span>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="mt-3 pt-3 border-t border-white/5 text-center text-zinc-500 text-[10px] font-mono italic">
-                          Nessun dettaglio extra disponibile per questo match
-                        </div>
+              return (
+                <div 
+                  key={idx} 
+                  onClick={() => isGiocata && setToggledMatches(prev => ({...prev, [idx]: !isExpanded}))}
+                  className={`flex flex-col p-5 bg-zinc-900 rounded-2xl border transition-colors duration-200 h-fit ${
+                    isGiocata ? 'cursor-pointer hover:bg-zinc-800' : ''
+                  } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'}`}
+                >
+                  {/* Intestazione */}
+                  <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-3">
+                    <span>Girone Unico • {p.dataMatch}</span>
+                    <div className="flex items-center gap-2">
+                      {isGiocata && (
+                        <span className="text-zinc-400 text-[9px] bg-white/5 px-1.5 py-0.5 rounded tracking-normal">
+                          {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
+                        </span>
                       )}
+                      <span className="text-[#ffea00]/80 font-bold">L. Paolucci</span>
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                  
+                  {/* Risultato e Squadre */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 w-5/12 text-left">
+                      <img loading="lazy" decoding="async" src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+                      <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra1}</span>
+                    </div>
+
+                    {isGiocata ? (
+                      <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
+                        <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
+                      </div>
+                    ) : (
+                      <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">⏱️ {p.orario}</div>
+                    )}
+
+                    <div className="flex items-center justify-end gap-2 w-5/12 text-right">
+                      <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra2}</span>
+                      <img loading="lazy" decoding="async" src={getLogoPath(p.squadra2)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0" />
+                    </div>
+                  </div>
+
+                  {/* ANIMAZIONE A TENDINA */}
+                  {isGiocata && (
+                    <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                      <div className="overflow-hidden">
+                        {hasDetails ? (
+                          <div className="mt-3 pt-3 border-t border-white/5 space-y-4 text-[11px] font-mono">
+                            <div className="grid grid-cols-2 gap-4 pt-1">
+                              <div className="border-r border-white/5 pr-2 space-y-2">
+                                <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed">{p.dettagliA || '-'}</p>
+                                {p.doppiA && (
+                                  <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-left max-w-full">
+                                    <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5"> GOL DOPPI</span>
+                                    <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiA}</p>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="pl-1 space-y-2 text-right flex flex-col items-end">
+                                <p className="text-zinc-300 font-medium whitespace-pre-line leading-relaxed w-full">{p.dettagliB || '-'}</p>
+                                {p.doppiB && (
+                                  <div className="mt-1 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg p-1.5 inline-block text-right max-w-full">
+                                    <span className="text-[8px] text-fuchsia-400 font-bold uppercase tracking-wider block mb-0.5">GOL DOPPI</span>
+                                    <p className="text-fuchsia-300 font-bold whitespace-pre-line leading-normal">{p.doppiB}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {p.mvp && (
+                              <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 rounded-xl p-2.5 flex items-center justify-between gap-2">
+                                <span className="text-[9px] uppercase tracking-wider text-[#ffea00]/80 font-bold">⭐ MVP</span>
+                                <span className="text-white font-bold text-xs uppercase tracking-wide">{p.mvp}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="mt-3 pt-3 border-t border-white/5 text-center text-zinc-500 text-[10px] font-mono italic">
+                            Nessun dettaglio extra disponibile per questo match
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <>
+              {/* MESSAGGIO RINvio PER PIOGGIA - 01/07 */}
+              {dataAttiva === '01/07' && (
+                <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center p-6 md:p-10 bg-zinc-900/60 rounded-3xl border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.05)] text-center backdrop-blur-sm">
+                  <span className="text-4xl md:text-5xl mb-4 opacity-90 drop-shadow-lg">⛈️</span>
+                  <h3 className="text-blue-400 font-display font-black uppercase text-xl md:text-2xl tracking-widest mb-3">
+                    Partite Rinviate
+                  </h3>
+                  <p className="text-zinc-400 font-mono text-xs md:text-sm leading-relaxed max-w-md">
+                    A causa delle avverse condizioni meteo, le partite in programma per questa data sono state posticipate al <strong className="text-white bg-white/10 px-2 py-0.5 rounded ml-1">07/07</strong>.
+                  </p>
+                </div>
+              )}
+
+              {/* PLACEHOLDER FASI FINALI - 08/07 e 10/07 */}
+              {(dataAttiva === '08/07' || dataAttiva === '10/07') && (
+                (dataAttiva === '08/07' 
+                  ? [{ fase: 'Semifinale 1', orario: '21:00' }, { fase: 'Semifinale 2', orario: '22:00' }] 
+                  : [{ fase: 'Finale 3°/4° Posto', orario: '21:00' }, { fase: 'Finale 1°/2° Posto', orario: '22:00' }]
+                ).map((match, i) => (
+                  <div key={i} className="flex flex-col p-5 bg-zinc-900/30 rounded-2xl border border-dashed border-white/10 h-fit backdrop-blur-sm">
+                    <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-4">
+                      <span className="text-[#ffea00]/60 font-bold">{match.fase} • {dataAttiva}</span>
+                      <span>L. Paolucci</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 w-5/12 text-left opacity-40">
+                        <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
+                        <span className="text-xs md:text-sm font-bold text-zinc-300 uppercase">Da definire</span>
+                      </div>
+                      
+                      <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 px-2.5 py-1 rounded-xl text-center font-mono text-[11px] font-bold text-[#ffea00]/40 whitespace-nowrap shrink-0">
+                        ⏱️ {match.orario}
+                      </div>
+                      
+                      <div className="flex items-center justify-end gap-2 w-5/12 text-right opacity-40">
+                        <span className="text-xs md:text-sm font-bold text-zinc-300 uppercase">Da definire</span>
+                        <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-5 pt-3 border-t border-dashed border-white/5 text-center">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 inline-flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-pulse"></span>
+                        In attesa dei sorteggi
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+
+              {/* FALLBACK PER ALTRE DATE VUOTE SE NECESSARIO */}
+              {(!['01/07', '08/07', '10/07'].includes(dataAttiva)) && (
+                <div className="col-span-1 md:col-span-2 text-center text-zinc-600 text-xs font-mono py-12 italic">
+                  Nessuna partita programmata o caricata per questa data.
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
-
       {/* CLASSIFICA GENERALE */}
       <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="text-2xl font-display font-black text-white text-center uppercase tracking-wider">Classifica Generale</h2>
