@@ -42,7 +42,7 @@ function getLogoPath(squadraNome: string): string {
 
 async function fetchCsvData(url: string): Promise<any[]> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "no-store" }); 
     if (!response.ok) return [];
     const csvText = await response.text();
     const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: true });
@@ -84,6 +84,7 @@ export default function TournamentRounds() {
   const [classifica, setClassifica] = useState<any[]>([]);
   const [partite, setPartite] = useState<any[]>([]);
   const [marcatori, setMarcatori] = useState<any[]>([]);
+  const [squadreInCampo, setSquadreInCampo] = useState<Set<string>>(new Set());
   
   const [toggledMatches, setToggledMatches] = useState<Record<number, boolean>>({});
 
@@ -99,74 +100,96 @@ export default function TournamentRounds() {
     setToggledMatches({});
   }, [dataAttiva]);
 
-  useEffect(() => {
-    async function loadAllData() {
-      try {
-        const [, rawPartite, rawMarcatori] = await Promise.all([
-          fetchCsvData(URL_GIRONI),
-          fetchCsvData(URL_PARTITE),    
-          fetchCsvData(URL_MARCATORI)  
-        ]);
-        const dizionarioClassifica: any = {};
-        SQUADRE_UFFICIALI.forEach(s => dizionarioClassifica[s] = { name: s, punti: 0, giocate: 0, vinte: 0, nulle: 0, perse: 0, gf: 0, gs: 0, dr: 0 });
+  const loadAllData = async (isSilentRefresh = false) => {
+    if (!isSilentRefresh) setLoading(true);
+    try {
+      const [, rawPartite, rawMarcatori] = await Promise.all([
+        fetchCsvData(URL_GIRONI),
+        fetchCsvData(URL_PARTITE),    
+        fetchCsvData(URL_MARCATORI)  
+      ]);
+      const dizionarioClassifica: any = {};
+      SQUADRE_UFFICIALI.forEach(s => dizionarioClassifica[s] = { name: s, punti: 0, giocate: 0, vinte: 0, nulle: 0, perse: 0, gf: 0, gs: 0, dr: 0 });
 
-        const listaPartite: any[] = [];
-        if (Array.isArray(rawPartite)) {
-          for (const row of rawPartite) {
-            if (!row[0] || !row[2] || !row[3]) continue;
-            const dataMatch = row[0].toString().trim(); 
-            const sA = row[2].toString().trim();
-            const sB = row[3].toString().trim();
-            const golA = row[4] !== undefined && row[4] !== '' ? Number(row[4]) : null;
-            const golB = row[5] !== undefined && row[5] !== '' ? Number(row[5]) : null;
-            const vO = row[6] ? row[6].toString().trim() : '';
-            
-            listaPartite.push({ 
-              dataMatch, 
-              squadra1: sA, 
-              squadra2: sB, 
-              golsquadra1: golA, 
-              golsquadra2: golB, 
-              orario: row[7] || 'Da definire',
-              dettagliA: row[8] ? row[8].toString().trim() : '',   
-              dettagliB: row[9] ? row[9].toString().trim() : '',   
-              mvp: row[10] ? row[10].toString().trim() : '',
-              doppiA: row[11] ? row[11].toString().trim() : '', 
-              doppiB: row[12] ? row[12].toString().trim() : ''  
-            });
+      const listaPartite: any[] = [];
+      const liveTeams = new Set<string>();
 
-            if (golA === null || golB === null) continue;
-            [sA, sB].forEach(s => { if (!dizionarioClassifica[s]) dizionarioClassifica[s] = { name: s, punti: 0, giocate: 0, vinte: 0, nulle: 0, perse: 0, gf: 0, gs: 0, dr: 0 }; });
-            dizionarioClassifica[sA].giocate += 1; dizionarioClassifica[sB].giocate += 1;
-            dizionarioClassifica[sA].gf += golA; dizionarioClassifica[sA].gs += golB;
-            dizionarioClassifica[sB].gf += golB; dizionarioClassifica[sB].gs += golA;
-            if (golA > golB) { dizionarioClassifica[sA].punti += 3; dizionarioClassifica[sA].vinte += 1; dizionarioClassifica[sB].perse += 1; }
-            else if (golA < golB) { dizionarioClassifica[sB].punti += 3; dizionarioClassifica[sB].vinte += 1; dizionarioClassifica[sA].perse += 1; }
-            else {
-              dizionarioClassifica[sA].nulle += 1; dizionarioClassifica[sB].nulle += 1;
-              if (vO === sA) { dizionarioClassifica[sA].punti += 2; dizionarioClassifica[sB].punti += 1; }
-              else if (vO === sB) { dizionarioClassifica[sB].punti += 2; dizionarioClassifica[sA].punti += 1; }
-              else { dizionarioClassifica[sA].punti += 1; dizionarioClassifica[sB].punti += 1; }
-            }
-            dizionarioClassifica[sA].dr = dizionarioClassifica[sA].gf - dizionarioClassifica[sA].gs;
-            dizionarioClassifica[sB].dr = dizionarioClassifica[sB].gf - dizionarioClassifica[sB].gs;
+      if (Array.isArray(rawPartite)) {
+        for (const row of rawPartite) {
+          if (!row[0] || !row[2] || !row[3]) continue;
+          const dataMatch = row[0].toString().trim(); 
+          const sA = row[2].toString().trim();
+          const sB = row[3].toString().trim();
+          const golA = row[4] !== undefined && row[4] !== '' ? Number(row[4]) : null;
+          const golB = row[5] !== undefined && row[5] !== '' ? Number(row[5]) : null;
+          const vO = row[6] ? row[6].toString().trim() : '';
+          
+          let stato = row[13] ? row[13].toString().trim().toUpperCase() : '';
+          if (stato === 'HALF TIME' || stato === 'INTERVALLO') stato = 'HT';
+
+          listaPartite.push({ 
+            dataMatch, 
+            squadra1: sA, 
+            squadra2: sB, 
+            golsquadra1: golA, 
+            golsquadra2: golB, 
+            orario: row[7] || 'Da definire',
+            dettagliA: row[8] ? row[8].toString().trim() : '',   
+            dettagliB: row[9] ? row[9].toString().trim() : '',   
+            mvp: row[10] ? row[10].toString().trim() : '',
+            doppiA: row[11] ? row[11].toString().trim() : '', 
+            doppiB: row[12] ? row[12].toString().trim() : '',
+            stato
+          });
+
+          // Aggiungiamo le squadre in campo sia se sono LIVE che in HT
+          if (stato === 'LIVE' || stato === 'HT') {
+            liveTeams.add(sA);
+            liveTeams.add(sB);
           }
-        }
-        setClassifica(Object.values(dizionarioClassifica).sort((a: any, b: any) => b.punti - a.punti || b.dr - a.dr || b.gf - a.gf));
 
-        const listaMarcatori: any[] = [];
-        if (Array.isArray(rawMarcatori)) {
-          for (const row of rawMarcatori) {
-            if (!row[0] || row[2] === undefined || row[2] === '') continue;
-            listaMarcatori.push({ nome: row[0].toString().trim(), squadra: row[1] ? row[1].toString().trim() : '-', gol: Number(row[2]) });
+          if (golA === null || golB === null) continue;
+          [sA, sB].forEach(s => { if (!dizionarioClassifica[s]) dizionarioClassifica[s] = { name: s, punti: 0, giocate: 0, vinte: 0, nulle: 0, perse: 0, gf: 0, gs: 0, dr: 0 }; });
+          dizionarioClassifica[sA].giocate += 1; dizionarioClassifica[sB].giocate += 1;
+          dizionarioClassifica[sA].gf += golA; dizionarioClassifica[sA].gs += golB;
+          dizionarioClassifica[sB].gf += golB; dizionarioClassifica[sB].gs += golA;
+          if (golA > golB) { dizionarioClassifica[sA].punti += 3; dizionarioClassifica[sA].vinte += 1; dizionarioClassifica[sB].perse += 1; }
+          else if (golA < golB) { dizionarioClassifica[sB].punti += 3; dizionarioClassifica[sB].vinte += 1; dizionarioClassifica[sA].perse += 1; }
+          else {
+            dizionarioClassifica[sA].nulle += 1; dizionarioClassifica[sB].nulle += 1;
+            if (vO === sA) { dizionarioClassifica[sA].punti += 2; dizionarioClassifica[sB].punti += 1; }
+            else if (vO === sB) { dizionarioClassifica[sB].punti += 2; dizionarioClassifica[sA].punti += 1; }
+            else { dizionarioClassifica[sA].punti += 1; dizionarioClassifica[sB].punti += 1; }
           }
+          dizionarioClassifica[sA].dr = dizionarioClassifica[sA].gf - dizionarioClassifica[sA].gs;
+          dizionarioClassifica[sB].dr = dizionarioClassifica[sB].gf - dizionarioClassifica[sB].gs;
         }
-        setPartite(listaPartite);
-        setMarcatori(listaMarcatori.sort((a, b) => b.gol - a.gol));
-        setLoading(false);
-      } catch (err) { setLoading(false); }
+      }
+      setClassifica(Object.values(dizionarioClassifica).sort((a: any, b: any) => b.punti - a.punti || b.dr - a.dr || b.gf - a.gf));
+      setSquadreInCampo(liveTeams);
+
+      const listaMarcatori: any[] = [];
+      if (Array.isArray(rawMarcatori)) {
+        for (const row of rawMarcatori) {
+          if (!row[0] || row[2] === undefined || row[2] === '') continue;
+          listaMarcatori.push({ nome: row[0].toString().trim(), squadra: row[1] ? row[1].toString().trim() : '-', gol: Number(row[2]) });
+        }
+      }
+      setPartite(listaPartite);
+      setMarcatori(listaMarcatori.sort((a, b) => b.gol - a.gol));
+      
+      if (!isSilentRefresh) setLoading(false);
+    } catch (err) { 
+      if (!isSilentRefresh) setLoading(false); 
     }
-    loadAllData();
+  };
+
+  useEffect(() => {
+    loadAllData(false);
+    const intervalId = setInterval(() => {
+      loadAllData(true);
+    }, 45000); 
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) return <div className="text-center text-zinc-400 py-12 font-mono animate-pulse">Sincronizzazione...</div>;
@@ -200,6 +223,10 @@ export default function TournamentRounds() {
               const isGiocata = p.golsquadra1 !== null && p.golsquadra2 !== null;
               const hasDetails = Boolean(p.dettagliA || p.dettagliB || p.doppiA || p.doppiB || p.mvp);
               const isExpanded = isGiocata && (toggledMatches[idx] !== undefined ? toggledMatches[idx] : hasDetails);
+              
+              const isLive = p.stato === 'LIVE';
+              const isHT = p.stato === 'HT';
+              const isMatchActive = isLive || isHT;
 
               return (
                 <div 
@@ -207,13 +234,13 @@ export default function TournamentRounds() {
                   onClick={() => isGiocata && setToggledMatches(prev => ({...prev, [idx]: !isExpanded}))}
                   className={`flex flex-col p-5 bg-zinc-900 rounded-2xl border transition-colors duration-200 h-fit ${
                     isGiocata ? 'cursor-pointer hover:bg-zinc-800' : ''
-                  } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'}`}
+                  } ${isExpanded ? 'border-[#ffea00]/30 shadow-lg shadow-[#ffea00]/5' : 'border-white/5'} ${isLive ? 'border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : isHT ? 'border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.1)]' : ''}`}
                 >
                   {/* Intestazione */}
                   <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-3">
                     <span>Girone Unico • {p.dataMatch}</span>
                     <div className="flex items-center gap-2">
-                      {isGiocata && (
+                      {isGiocata && !isMatchActive && (
                         <span className="text-zinc-400 text-[9px] bg-white/5 px-1.5 py-0.5 rounded tracking-normal">
                           {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
                         </span>
@@ -229,7 +256,24 @@ export default function TournamentRounds() {
                       <span className="text-xs md:text-sm font-bold text-white uppercase break-words leading-tight">{p.squadra1}</span>
                     </div>
 
-                    {isGiocata ? (
+                    {isMatchActive ? (
+                      <div className="flex flex-col items-center shrink-0 min-w-[70px]">
+                        {isLive ? (
+                          <div className="bg-red-500/10 border border-red-500/30 px-2.5 py-0.5 rounded text-[10px] font-black text-red-500 uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_8px_rgba(239,68,68,0.3)] animate-pulse mb-1">
+                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>LIVE
+                          </div>
+                        ) : (
+                          <div className="bg-orange-500/10 border border-orange-500/30 px-2.5 py-0.5 rounded text-[10px] font-black text-orange-500 uppercase tracking-widest flex items-center gap-1.5 mb-1">
+                            ⏱️ HT
+                          </div>
+                        )}
+                        {isGiocata && (
+                          <div className="font-mono font-bold text-[#ffea00] text-sm md:text-base leading-none">
+                            {p.golsquadra1} - {p.golsquadra2}
+                          </div>
+                        )}
+                      </div>
+                    ) : isGiocata ? (
                       <div className="flex items-center gap-2.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 font-mono font-bold text-[#ffea00] text-xs md:text-sm shrink-0">
                         <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
                       </div>
@@ -352,6 +396,7 @@ export default function TournamentRounds() {
           )}
         </div>
       </div>
+
       {/* CLASSIFICA GENERALE */}
       <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="text-2xl font-display font-black text-white text-center uppercase tracking-wider">Classifica Generale</h2>
@@ -364,25 +409,42 @@ export default function TournamentRounds() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.02]">
-                {classifica.map((s: any, idx: number) => (
-                  <tr key={idx} className={`transition-colors ${idx < 4 ? 'bg-[#ffea00]/[0.02]' : ''}`}>
-                    <td className={`py-3 pl-2 font-bold ${idx < 4 ? 'text-[#ffea00]' : 'text-zinc-500'}`}>#{idx + 1}</td>
-                    <td className="py-3 font-bold text-white uppercase max-w-[160px] whitespace-normal leading-tight">
-                      <div className="flex items-center gap-2">
-                        <img loading="lazy" decoding="async" src={getLogoPath(s.name)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-4 h-4 object-contain shrink-0" />
-                        <span>{s.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 text-center font-black text-base text-[#ffea00]">{s.punti}</td>
-                    <td className="py-3 text-center">{s.giocate}</td><td className="py-3 text-center">{s.vinte}</td><td className="py-3 text-center">{s.nulle}</td><td className="py-3 text-center">{s.perse}</td>
-                    <td className={`py-3 text-center font-bold ${s.dr > 0 ? 'text-green-400' : s.dr < 0 ? 'text-red-400' : ''}`}>{s.dr > 0 ? `+${s.dr}` : s.dr}</td>
-                  </tr>
-                ))}
+                {classifica.map((s: any, idx: number) => {
+                  const isPlaying = squadreInCampo.has(s.name);
+                  
+                  return (
+                    <tr key={idx} className={`transition-colors ${isPlaying ? 'bg-red-500/5 relative' : idx < 4 ? 'bg-[#ffea00]/[0.02]' : ''}`}>
+                      <td className={`py-3 pl-2 font-bold ${idx < 4 ? 'text-[#ffea00]' : 'text-zinc-500'}`}>
+                        {isPlaying && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>}
+                        #{idx + 1}
+                      </td>
+                      <td className="py-3 font-bold text-white uppercase max-w-[160px] whitespace-normal leading-tight">
+                        <div className="flex items-center gap-2">
+                          <img loading="lazy" decoding="async" src={getLogoPath(s.name)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-4 h-4 object-contain shrink-0" />
+                          <span>{s.name}</span>
+                          {isPlaying && (
+                            <span className="hidden md:inline-flex bg-red-500/20 text-red-500 border border-red-500/40 text-[8px] px-1.5 py-0.5 rounded uppercase tracking-widest animate-pulse ml-2">IN CAMPO</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 text-center font-black text-base text-[#ffea00]">{s.punti}</td>
+                      <td className="py-3 text-center">{s.giocate}</td><td className="py-3 text-center">{s.vinte}</td><td className="py-3 text-center">{s.nulle}</td><td className="py-3 text-center">{s.perse}</td>
+                      <td className={`py-3 text-center font-bold ${s.dr > 0 ? 'text-green-400' : s.dr < 0 ? 'text-red-400' : ''}`}>{s.dr > 0 ? `+${s.dr}` : s.dr}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-          <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] uppercase font-mono text-zinc-500 pl-2">
-            <span className="w-2.5 h-2.5 rounded bg-[#ffea00]/20 border border-[#ffea00]/40"></span><span>Top 4: Semifinali</span>
+          <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-[10px] uppercase font-mono text-zinc-500 pl-2">
+              <span className="w-2.5 h-2.5 rounded bg-[#ffea00]/20 border border-[#ffea00]/40"></span><span>Top 4: Semifinali</span>
+            </div>
+            {squadreInCampo.size > 0 && (
+              <div className="flex items-center gap-2 text-[10px] uppercase font-mono text-red-500/80 pr-2 animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span><span>Partita in corso</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
