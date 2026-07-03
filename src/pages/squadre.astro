@@ -1,0 +1,32 @@
+---
+import MkcLayout from '../layouts/MkcLayout.astro';
+import TeamsShowcase from '../components/react/TeamsShowcase.tsx';
+---
+
+<MkcLayout title="Squadre 2026 | Matenano Kings Cup">
+  <main class="py-16 bg-[#030302] min-h-screen text-white relative overflow-hidden">
+    
+    {/* SFONDO LUCI (Come in index e albo d'oro) */}
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220%] h-[450px] opacity-45 mix-blend-color-dodge animate-[spin_8s_linear_infinite]" style="background: linear-gradient(135deg, transparent 40%, rgba(255,234,0,0.8) 50%, transparent 60%); filter: blur(55px);"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[350px] opacity-35 mix-blend-color-dodge animate-[spin_12s_linear_infinite]" style="background: linear-gradient(45deg, transparent 42%, rgba(212,175,55,0.7) 50%, transparent 58%); filter: blur(45px); animation-direction: reverse;"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 relative z-10 space-y-12">
+      
+      {/* INTESTAZIONE */}
+      <div class="text-center space-y-4 pt-4">
+        <h1 class="text-4xl md:text-6xl font-display font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#cca100] via-[#ffea00] to-[#cca100] drop-shadow-[0_4px_15px_rgba(255,234,0,0.2)]">
+          Le Formazioni
+        </h1>
+        <p class="font-mono text-xs text-zinc-400 uppercase tracking-widest">Edizione 2026</p>
+        <div class="w-16 h-1 bg-[#ffea00] mx-auto mt-4"></div>
+      </div>
+
+      {/* COMPONENTE REACT CON LOGICA DI INCROCIO DATI */}
+      <TeamsShowcase client:load />
+
+    </div>
+  </main>
+</MkcLayout>
