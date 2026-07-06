@@ -17,9 +17,9 @@ const NEWS_DATA: NewsItem[] = [
     {
     id: 8, // Assicurati che l'ID sia univoco
     date: '06/07/2026',
-    title: 'AGGIORNAMENTO METEO: SERATA IN STANDBY',
+    title: 'AGGIORNAMENTO METEO: SERATA CONFERMATA!',
     type: 'meteo',
-    content: 'A causa delle precipitazioni in corso a Santa Vittoria, la direzione gara sta valutando le condizioni del manto erboso del Campo L. Paolucci. Per tutelare la sicurezza dei giocatori, lo svolgimento delle partite previste per la serata odierna è momentaneamente in standby. Una decisione definitiva verrà presa e comunicata entro le ore 20:00.',
+    content: 'Confermato il regolare svolgimento delle partite in programma per la serata odierna (06/07). Le condizioni meteo sono migliorate e il campo è perfettamente agibile. Tutti gli atleti sono invitati a presentarsi al Campo L. Paolucci per le sfide in programma.s',
     tags: ['Meteo', 'Comunicazione Ufficiale', 'Standby']
   },
   {
