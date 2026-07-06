@@ -1,13 +1,16 @@
----
----
 <header class="fixed w-full top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/5 transition-all">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
     
-    <a href="/" class="flex items-center gap-3 group">
-      <div class="w-10 h-10 bg-amber-400 rounded-xl flex items-center justify-center font-display font-bold text-black tracking-tighter shadow-[0_0_15px_rgba(251,191,36,0.4)]">
-        MKC
-      </div>
-      <span class="font-display font-bold text-lg tracking-wider group-hover:text-amber-400 transition-colors">KINGS CUP</span>
+    <a href="/" class="flex items-center gap-3 group relative">
+      {/* Alone luminoso che appare all'hover sul logo */}
+      <div class="absolute inset-0 bg-[#ffea00]/20 blur-[20px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      {/* Il Logo MKC26 al posto del quadratino testo */}
+      <img 
+        src="/assets/mkc26.png" 
+        alt="MKC Logo" 
+        class="w-12 h-12 object-contain relative z-10 drop-shadow-[0_2px_10px_rgba(255,234,0,0.3)] transition-transform group-hover:scale-110 duration-300" 
+      />
     </a>
     
     <nav class="hidden md:flex space-x-8 font-mono text-xs uppercase tracking-widest">
@@ -23,7 +26,7 @@
         <span>&larr;</span> <span>Numen APS</span>
       </a>
 
-      <button id="mobile-menu-btn" class="md:hidden text-zinc-400 hover:text-white focus:outline-none p-2" aria-label="Apri menu">
+      <button id="mobile-menu-btn" class="md:hidden text-zinc-400 hover:text-[#ffea00] focus:outline-none p-2 transition-colors" aria-label="Apri menu">
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path id="icon-menu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           <path id="icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -33,17 +36,17 @@
 
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-zinc-950 border-b border-white/10 shadow-2xl origin-top">
+  <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-zinc-950/95 backdrop-blur-xl border-b border-white/10 shadow-2xl origin-top">
     <div class="px-4 pt-4 pb-6 space-y-2 flex flex-col font-mono text-xs uppercase tracking-widest text-center">
-      <a href="/iltorneo" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Il Torneo</a>
-      <a href="/classifiche" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Gironi & Classifiche</a>
-      <a href="/squadre" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Squadre</a>
-      <a href="/news" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">News</a>
-      <a href="/albo" class="block py-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">Albo d'Oro</a>
+      <a href="/iltorneo" class="block py-4 text-zinc-400 hover:text-[#ffea00] hover:bg-white/5 rounded-xl transition-colors">Il Torneo</a>
+      <a href="/classifiche" class="block py-4 text-zinc-400 hover:text-[#ffea00] hover:bg-white/5 rounded-xl transition-colors">Gironi & Classifiche</a>
+      <a href="/squadre" class="block py-4 text-zinc-400 hover:text-[#ffea00] hover:bg-white/5 rounded-xl transition-colors">Squadre</a>
+      <a href="/news" class="block py-4 text-zinc-400 hover:text-[#ffea00] hover:bg-white/5 rounded-xl transition-colors">News</a>
+      <a href="/albo" class="block py-4 text-zinc-400 hover:text-[#ffea00] hover:bg-white/5 rounded-xl transition-colors">Albo d'Oro</a>
       
       <div class="w-12 h-[1px] bg-white/10 mx-auto my-4"></div>
       
-      <a href="https://numenaps.it" class="block py-4 text-amber-500 hover:text-amber-400 rounded-xl transition-colors">
+      <a href="https://numenaps.it" class="block py-4 text-zinc-500 hover:text-white rounded-xl transition-colors">
         &larr; Ritorna a Numen APS
       </a>
     </div>
@@ -51,7 +54,6 @@
 </header>
 
 <script>
-  // Logica per aprire e chiudere il menu mobile
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
@@ -60,10 +62,7 @@
 
     if (btn && menu && iconMenu && iconClose) {
       btn.addEventListener('click', () => {
-        // Mostra/Nascondi la tendina
         menu.classList.toggle('hidden');
-        
-        // Scambia le icone (Hamburger <-> X)
         iconMenu.classList.toggle('hidden');
         iconClose.classList.toggle('hidden');
       });
