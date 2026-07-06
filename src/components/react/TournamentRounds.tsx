@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom'; // IMPORT FONDAMENTALE AGGIUNTO
 import Papa from 'papaparse';
 
 // I tuoi link reali presi da "Pubblica sul web"
@@ -6,7 +7,9 @@ const URL_GIRONI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo9
 const URL_PARTITE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1934217749&single=true&output=csv';
 const URL_MARCATORI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1767066330&single=true&output=csv';
 
-// Lista ufficiale delle 7 squadre
+const LAT = 43.0189;
+const LON = 13.4958;
+
 const SQUADRE_UFFICIALI = [
   'Edil Pennello Fc',
   'Godo Glimt',
@@ -17,10 +20,8 @@ const SQUADRE_UFFICIALI = [
   'Club'
 ];
 
-// Date ufficiali del torneo
 const DATE_TORNEO = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07', '07/07', '08/07', '10/07'];
 
-// Mappatura colori per la classifica marcatori
 const COLOR_MAP: Record<string, string> = {
   'Godo Glimt': 'rgba(204, 161, 0, 0.15)',        
   'Sold Out': 'rgba(127, 0, 0, 0.25)',           
@@ -31,7 +32,16 @@ const COLOR_MAP: Record<string, string> = {
   'Club': 'rgba(63, 63, 70, 0.4)',               
 };
 
-// Helper per generare il percorso del logo
+function getWeatherEmoji(code: number, isDay: boolean): string {
+  if (code === 0) return isDay ? '☀️' : '🌙';
+  if (code === 1 || code === 2) return isDay ? '🌤️' : '☁️';
+  if (code === 3) return '☁️';
+  if (code === 45 || code === 48) return '🌫️';
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
+  if ([95, 96, 99].includes(code)) return '⛈️';
+  return '☁️';
+}
+
 function getLogoPath(squadraNome: string): string {
   if (!squadraNome) return '/assets/logo-big.jpg';
   const nomeTrimmed = squadraNome.trim();
@@ -81,11 +91,17 @@ function CountdownTimer() {
 
 export default function TournamentRounds() {
   const [loading, setLoading] = useState(true);
+  
+  // Stato per verificare se siamo lato client (necessario per il Portal e Astro)
+  const [isClient, setIsClient] = useState(false);
+  
   const [classifica, setClassifica] = useState<any[]>([]);
   const [partite, setPartite] = useState<any[]>([]);
   const [marcatori, setMarcatori] = useState<any[]>([]);
   const [squadreInCampo, setSquadreInCampo] = useState<Set<string>>(new Set());
   const [teamModal, setTeamModal] = useState<string | null>(null);
+  
+  const [meteoData, setMeteoData] = useState<Record<string, { temp: number; emoji: string }>>({});
   
   const [toggledMatches, setToggledMatches] = useState<Record<number, boolean>>({});
   const [showAllScorers, setShowAllScorers] = useState(false);
@@ -98,9 +114,54 @@ export default function TournamentRounds() {
     return DATE_TORNEO.includes(dataFormattata) ? dataFormattata : '28/06';
   });
 
+  // Segnala al componente che è stato caricato lato browser e permette l'uso di Portals
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Blocco scroll quando modale aperto
+  useEffect(() => {
+    if (teamModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [teamModal]);
+
   useEffect(() => {
     setToggledMatches({});
   }, [dataAttiva]);
+
+  const fetchMeteo = async () => {
+    try {
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,weather_code,is_day&timezone=Europe%2FRome&past_days=14`);
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      const parsedMeteo: Record<string, { temp: number; emoji: string }> = {};
+      
+      data.hourly.time.forEach((timeStr: string, idx: number) => {
+        const [, month, dayAndHour] = timeStr.split('-');
+        const [day, hourStr] = dayAndHour.split('T');
+        const hour = parseInt(hourStr.split(':')[0], 10);
+        
+        const key = `${day}/${month}-${hour}`;
+        const temp = Math.round(data.hourly.temperature_2m[idx]);
+        const code = data.hourly.weather_code[idx];
+        const isDay = data.hourly.is_day[idx] === 1;
+        
+        parsedMeteo[key] = {
+          temp,
+          emoji: getWeatherEmoji(code, isDay)
+        };
+      });
+      
+      setMeteoData(parsedMeteo);
+    } catch (err) {
+      console.error("Errore recupero meteo:", err);
+    }
+  };
 
   const loadAllData = async (isSilentRefresh = false) => {
     if (!isSilentRefresh) setLoading(true);
@@ -130,6 +191,7 @@ export default function TournamentRounds() {
           if (stato === 'HALF TIME' || stato === 'INTERVALLO') stato = 'HT';
 
           const isTavolino = stato === 'TAVOLINO' || stato === 'ANNULLATA';
+          const isDaConfermare = stato === 'DA CONFERMARE' || stato === 'STANDBY';
 
           listaPartite.push({ 
             dataMatch, 
@@ -144,7 +206,8 @@ export default function TournamentRounds() {
             doppiA: row[11] ? row[11].toString().trim() : '', 
             doppiB: row[12] ? row[12].toString().trim() : '',
             stato,
-            isTavolino
+            isTavolino,
+            isDaConfermare
           });
 
           if (stato === 'LIVE' || stato === 'HT') {
@@ -190,11 +253,23 @@ export default function TournamentRounds() {
 
   useEffect(() => {
     loadAllData(false);
-    const intervalId = setInterval(() => {
-      loadAllData(true);
-    }, 45000); 
-    return () => clearInterval(intervalId);
+    fetchMeteo(); 
+    
+    const intervalData = setInterval(() => { loadAllData(true); }, 45000); 
+    const intervalMeteo = setInterval(() => { fetchMeteo(); }, 3600000);
+
+    return () => {
+      clearInterval(intervalData);
+      clearInterval(intervalMeteo);
+    };
   }, []);
+
+  const getMatchMeteo = (dataMatch: string, orario: string) => {
+    if (!orario || orario === 'Da definire') return null;
+    const hour = parseInt(orario.split(':')[0], 10);
+    if (isNaN(hour)) return null;
+    return meteoData[`${dataMatch}-${hour}`] || null;
+  };
 
   if (loading) return <div className="text-center text-zinc-400 py-12 font-mono animate-pulse">Sincronizzazione...</div>;
 
@@ -203,6 +278,7 @@ export default function TournamentRounds() {
 
   return (
     <div className="max-w-7xl mx-auto px-2 md:px-4 space-y-16 pb-12 overflow-hidden">
+      
       {/* HEADER */}
       <div className="text-center space-y-6 pt-6">
         <CountdownTimer />
@@ -221,7 +297,6 @@ export default function TournamentRounds() {
           ))}
         </div>
         
-        {/* Griglia delle partite */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left">
           {partiteFiltrate.length > 0 ? (
             partiteFiltrate.map((p, idx) => {
@@ -233,6 +308,8 @@ export default function TournamentRounds() {
               const isHT = p.stato === 'HT';
               const isTavolino = p.isTavolino;
               const isMatchActive = isLive || isHT;
+
+              const matchWeather = getMatchMeteo(p.dataMatch, p.orario);
 
               return (
                 <div 
@@ -246,22 +323,25 @@ export default function TournamentRounds() {
                     'border-white/5'
                   } ${isLive ? 'border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : isHT ? 'border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.1)]' : ''}`}
                 >
-                  {/* Intestazione */}
                   <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-3">
                     <span>Girone Unico • {p.dataMatch}</span>
                     <div className="flex items-center gap-2">
+                      {matchWeather && (
+                        <span className="bg-white/5 text-zinc-300 font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border border-white/5">
+                          <span>{matchWeather.emoji}</span>
+                          <span>{matchWeather.temp}°C</span>
+                        </span>
+                      )}
                       {isGiocata && !isMatchActive && (
                         <span className="text-zinc-400 text-[9px] bg-white/5 px-1.5 py-0.5 rounded tracking-normal">
                           {isExpanded ? '▲ Chiudi' : '▼ Dettagli'}
                         </span>
                       )}
-                      <span className={`${isTavolino ? 'text-purple-400/80' : 'text-[#ffea00]/80'} font-bold hidden sm:inline`}> 📍 Campo L. Paolucci</span>
+                      <span className={`${isTavolino ? 'text-purple-400/80' : 'text-[#ffea00]/80'} font-bold hidden sm:inline`}> 📍 L. Paolucci</span>
                     </div>
                   </div>
                   
-                  {/* Risultato e Squadre */}
                   <div className={`flex items-center justify-between gap-1 sm:gap-2 ${isTavolino ? 'grayscale-[30%]' : ''}`}>
-                    
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 flex-1 min-w-0 text-left">
                       <img loading="lazy" decoding="async" src={getLogoPath(p.squadra1)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-6 h-6 md:w-7 md:h-7 object-contain shrink-0" />
                       <span className="text-[10px] sm:text-xs md:text-sm font-bold text-white uppercase leading-tight line-clamp-2 sm:line-clamp-none break-words">
@@ -269,7 +349,7 @@ export default function TournamentRounds() {
                       </span>
                     </div>
 
-                    {/* Blocco Centrale Risultato - AGGIUNTO SUPPORTO TAVOLINO */}
+                    {/* Blocco Centrale Risultato */}
                     {isMatchActive ? (
                       <div className="flex flex-col items-center shrink-0 w-[70px] sm:w-[90px]">
                         {isLive ? (
@@ -298,12 +378,22 @@ export default function TournamentRounds() {
                           <span>{p.golsquadra1}</span><span className="text-zinc-600 text-xs">-</span><span>{p.golsquadra2}</span>
                         </div>
                       </div>
+                    ) : p.isDaConfermare ? (
+                      <div className="flex flex-col items-center gap-1 shrink-0 w-[70px] sm:w-[90px]">
+                         <div className="bg-yellow-500/10 border border-yellow-500/30 px-1.5 py-0.5 rounded text-[7px] sm:text-[8px] font-black text-yellow-500 uppercase tracking-widest animate-pulse whitespace-nowrap mb-0.5">
+                           DA CONFERMARE
+                         </div>
+                        <div className="bg-zinc-800/80 border border-zinc-700 px-2 py-1 rounded-xl text-center font-mono text-[9px] sm:text-[11px] font-bold text-zinc-400 whitespace-nowrap w-full">
+                          ⏱️ {p.orario}
+                        </div>
+                      </div>
                     ) : (
-                      <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2 py-1 rounded-xl text-center font-mono text-[9px] sm:text-[11px] font-bold text-[#ffea00] whitespace-nowrap shrink-0">
-                        ⏱️ {p.orario}
+                      <div className="flex flex-col items-center gap-1 shrink-0">
+                        <div className="bg-[#ffea00]/10 border border-[#ffea00]/20 px-2 py-1 rounded-xl text-center font-mono text-[9px] sm:text-[11px] font-bold text-[#ffea00] whitespace-nowrap">
+                          ⏱️ {p.orario}
+                        </div>
                       </div>
                     )}
-
                     <div className="flex flex-col-reverse sm:flex-row items-end sm:items-center justify-end gap-1 sm:gap-2 flex-1 min-w-0 text-right">
                       <span className="text-[10px] sm:text-xs md:text-sm font-bold text-white uppercase leading-tight line-clamp-2 sm:line-clamp-none break-words">
                         {p.squadra2}
@@ -312,7 +402,6 @@ export default function TournamentRounds() {
                     </div>
                   </div>
 
-                  {/* ANIMAZIONE A TENDINA */}
                   {isGiocata && (
                     <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                       <div className="overflow-hidden">
@@ -380,37 +469,48 @@ export default function TournamentRounds() {
                 (dataAttiva === '08/07' 
                   ? [{ fase: 'Semifinale 1', orario: '21:00' }, { fase: 'Semifinale 2', orario: '22:00' }] 
                   : [{ fase: 'Finale 3°/4° Posto', orario: '21:00' }, { fase: 'Finale 1°/2° Posto', orario: '22:00' }]
-                ).map((match, i) => (
-                  <div key={i} className="flex flex-col p-5 bg-zinc-900/30 rounded-2xl border border-dashed border-white/10 h-fit backdrop-blur-sm">
-                    <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-4">
-                      <span className="text-[#ffea00]/60 font-bold">{match.fase} • {dataAttiva}</span>
-                      <span className="hidden sm:inline">L. Paolucci</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 flex-1 min-w-0 text-left opacity-40">
-                        <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
-                        <span className="text-[10px] sm:text-sm font-bold text-zinc-300 uppercase line-clamp-2">Da definire</span>
+                ).map((match, i) => {
+                  const matchWeather = getMatchMeteo(dataAttiva, match.orario);
+                  return (
+                    <div key={i} className="flex flex-col p-5 bg-zinc-900/30 rounded-2xl border border-dashed border-white/10 h-fit backdrop-blur-sm">
+                      <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-500 uppercase mb-4">
+                        <span className="text-[#ffea00]/60 font-bold">{match.fase} • {dataAttiva}</span>
+                        <div className="flex items-center gap-2">
+                          {matchWeather && (
+                            <span className="bg-white/5 text-zinc-300 font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border border-white/5">
+                              <span>{matchWeather.emoji}</span>
+                              <span>{matchWeather.temp}°C</span>
+                            </span>
+                          )}
+                          <span className="hidden sm:inline">L. Paolucci</span>
+                        </div>
                       </div>
                       
-                      <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 px-2 py-1 rounded-xl text-center font-mono text-[9px] sm:text-[11px] font-bold text-[#ffea00]/40 whitespace-nowrap shrink-0">
-                        ⏱️ {match.orario}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-1 min-w-0 text-left opacity-40">
+                          <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
+                          <span className="text-[10px] sm:text-sm font-bold text-zinc-300 uppercase line-clamp-2">Da definire</span>
+                        </div>
+                        
+                        <div className="bg-[#ffea00]/5 border border-[#ffea00]/10 px-2 py-1 rounded-xl text-center font-mono text-[9px] sm:text-[11px] font-bold text-[#ffea00]/40 whitespace-nowrap shrink-0">
+                          ⏱️ {match.orario}
+                        </div>
+                        
+                        <div className="flex items-center justify-end gap-2 flex-1 min-w-0 text-right opacity-40">
+                          <span className="text-[10px] sm:text-sm font-bold text-zinc-300 uppercase line-clamp-2">Da definire</span>
+                          <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
+                        </div>
                       </div>
                       
-                      <div className="flex items-center justify-end gap-2 flex-1 min-w-0 text-right opacity-40">
-                        <span className="text-[10px] sm:text-sm font-bold text-zinc-300 uppercase line-clamp-2">Da definire</span>
-                        <div className="w-6 h-6 rounded-full bg-black/50 border border-white/10 shrink-0"></div>
+                      <div className="mt-5 pt-3 border-t border-dashed border-white/5 text-center">
+                        <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-zinc-400 bg-black/40 px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 inline-flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-pulse"></span>
+                          In attesa sorteggi
+                        </span>
                       </div>
                     </div>
-                    
-                    <div className="mt-5 pt-3 border-t border-dashed border-white/5 text-center">
-                      <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-zinc-400 bg-black/40 px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 inline-flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-pulse"></span>
-                        In attesa sorteggi
-                      </span>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
 
               {(!['01/07', '08/07', '10/07'].includes(dataAttiva)) && (
@@ -424,15 +524,24 @@ export default function TournamentRounds() {
       </div>
 
       {/* CLASSIFICA GENERALE */}
-      <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
-        <h2 className="text-xl md:text-2xl font-display font-black text-white text-center uppercase tracking-wider">Classifica Generale</h2>
+      <div className="max-w-4xl mx-auto space-y-4 md:space-y-6 pt-4">
+        
+        <div className="text-center">
+          <h2 className="text-xl md:text-2xl font-display font-black text-white uppercase tracking-wider">Classifica Generale</h2>
+          <p className="text-[10px] md:text-xs font-mono text-[#ffea00]/90 animate-pulse mt-2">
+            👆 Clicca sul nome di una squadra per esplorarne la rosa e le statistiche
+          </p>
+        </div>
         
         <div className="bg-zinc-900 border border-white/5 rounded-2xl md:rounded-3xl p-3 md:p-6 shadow-xl w-full">
           <table className="w-full text-left text-[10px] sm:text-xs md:text-sm font-mono text-zinc-400">
             <thead>
               <tr className="text-zinc-600 uppercase border-b border-white/5">
                 <th className="pb-2 font-bold w-[20px]">#</th>
-                <th className="pb-2 pl-1 md:pl-2">Squadra</th>
+                <th className="pb-2 pl-1 md:pl-2">
+                  Squadra
+                  <span className="block text-[8px] md:text-[9px] text-[#ffea00]/60 font-normal lowercase tracking-tighter mt-0.5">tap per info</span>
+                </th>
                 <th className="pb-2 text-center font-bold text-[#ffea00]/80">Pt</th>
                 <th className="pb-2 text-center">G</th>
                 <th className="pb-2 text-center">V</th>
@@ -452,12 +561,12 @@ export default function TournamentRounds() {
                       {idx + 1}
                     </td>
                     <td 
-                      className="py-2.5 pl-1 md:pl-2 font-bold text-white uppercase truncate max-w-[90px] sm:max-w-[150px] md:max-w-[200px] cursor-pointer hover:text-[#ffea00] transition-colors group"
+                      className="py-2.5 pl-1 md:pl-2 font-bold text-white uppercase truncate max-w-[90px] sm:max-w-[150px] md:max-w-[200px] cursor-pointer group"
                       onClick={() => setTeamModal(s.name)}
                     >
                       <div className="flex items-center gap-1.5 md:gap-2">
                         <img loading="lazy" decoding="async" src={getLogoPath(s.name)} alt="" onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} className="w-3.5 h-3.5 md:w-4 md:h-4 object-contain shrink-0 group-hover:scale-110 transition-transform" />
-                        <span className="truncate border-b border-transparent group-hover:border-[#ffea00]/50">{s.name}</span>
+                        <span className="truncate border-b border-dashed border-transparent group-hover:border-[#ffea00]/60 group-hover:text-[#ffea00] transition-colors">{s.name}</span>
                         {isPlaying && (
                           <span className="hidden md:inline-flex bg-red-500/20 text-red-500 border border-red-500/40 text-[8px] px-1.5 py-0.5 rounded uppercase tracking-widest animate-pulse ml-2">IN CAMPO</span>
                         )}
@@ -482,67 +591,70 @@ export default function TournamentRounds() {
         </div>
       </div>
 
-      {/* MODALE POP-UP SQUADRA - OTTIMIZZATO PER LO SCROLL SU MOBILE */}
-      {teamModal && (
+      {/* MODALE POP-UP SQUADRA CON REACT PORTALS */}
+      {isClient && teamModal && createPortal(
         <div 
-          className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          style={{ animation: 'fadeInModal 0.2s ease-out forwards' }}
           onClick={() => setTeamModal(null)}
         >
-          {/* Contenitore di posizionamento: permette lo scroll interno se l'altezza supera il display */}
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            
-            <div 
-              className="bg-zinc-900 border border-[#ffea00]/20 rounded-3xl p-6 w-full max-w-sm relative shadow-[0_0_50px_rgba(255,234,0,0.15)] transform transition-all my-8 text-left"
-              onClick={e => e.stopPropagation()}
+          <style>{`
+            @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes popUpModal { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+          `}</style>
+          
+          <div 
+            className="bg-zinc-900 border border-[#ffea00]/20 rounded-3xl p-6 w-full max-w-sm relative shadow-[0_0_50px_rgba(255,234,0,0.15)] max-h-[90vh] overflow-y-auto"
+            style={{ animation: 'popUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setTeamModal(null)} 
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white text-xl p-1 font-mono transition-colors"
             >
-              {/* Bottone di chiusura */}
-              <button 
-                onClick={() => setTeamModal(null)} 
-                className="absolute top-4 right-4 text-zinc-500 hover:text-white text-xl p-1 font-mono transition-colors"
-              >
-                ✕
-              </button>
+              ✕
+            </button>
+            
+            <div className="flex flex-col items-center space-y-4 text-center mt-2">
+              <img 
+                src={getLogoPath(teamModal)} 
+                alt={teamModal} 
+                onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} 
+                className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
+              />
+              <h3 className="text-2xl font-display font-black text-white uppercase tracking-wider">
+                {teamModal}
+              </h3>
               
-              <div className="flex flex-col items-center space-y-4 text-center mt-2">
-                <img 
-                  src={getLogoPath(teamModal)} 
-                  alt={teamModal} 
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/assets/logo-big.jpg'; }} 
-                  className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
-                />
-                <h3 className="text-2xl font-display font-black text-white uppercase tracking-wider">
-                  {teamModal}
-                </h3>
-                
-                {classifica.filter(s => s.name === teamModal).map(s => (
-                  <div key={s.name} className="grid grid-cols-3 gap-2 w-full pt-4 border-t border-white/5">
-                    <div className="bg-black/40 rounded-xl p-2 border border-white/5">
-                      <p className="text-[10px] text-zinc-500 font-mono uppercase">Punti</p>
-                      <p className="text-xl font-black text-[#ffea00]">{s.punti}</p>
-                    </div>
-                    <div className="bg-black/40 rounded-xl p-2 border border-white/5">
-                      <p className="text-[10px] text-zinc-500 font-mono uppercase">Gol Fatti</p>
-                      <p className="text-xl font-black text-white">{s.gf}</p>
-                    </div>
-                    <div className="bg-black/40 rounded-xl p-2 border border-white/5">
-                      <p className="text-[10px] text-zinc-500 font-mono uppercase">Vittorie</p>
-                      <p className="text-xl font-black text-green-400">{s.vinte}</p>
-                    </div>
+              {classifica.filter(s => s.name === teamModal).map(s => (
+                <div key={s.name} className="grid grid-cols-3 gap-2 w-full pt-4 border-t border-white/5">
+                  <div className="bg-black/40 rounded-xl p-2 border border-white/5">
+                    <p className="text-[10px] text-zinc-500 font-mono uppercase">Punti</p>
+                    <p className="text-xl font-black text-[#ffea00]">{s.punti}</p>
                   </div>
-                ))}
-                
-                <a 
-                  href={`/squadre?team=${encodeURIComponent(teamModal)}`} 
-                  className="mt-6 flex items-center justify-center w-full py-3.5 bg-[#ffea00] text-black font-bold font-mono text-xs uppercase tracking-widest rounded-xl hover:bg-[#cca100] transition-colors shadow-lg shadow-[#ffea00]/20"
-                >
-                  Esplora Rosa Completa →
-                </a>
-              </div>
+                  <div className="bg-black/40 rounded-xl p-2 border border-white/5">
+                    <p className="text-[10px] text-zinc-500 font-mono uppercase">Gol Fatti</p>
+                    <p className="text-xl font-black text-white">{s.gf}</p>
+                  </div>
+                  <div className="bg-black/40 rounded-xl p-2 border border-white/5">
+                    <p className="text-[10px] text-zinc-500 font-mono uppercase">Vittorie</p>
+                    <p className="text-xl font-black text-green-400">{s.vinte}</p>
+                  </div>
+                </div>
+              ))}
+              
+              <a 
+                href={`/squadre?team=${encodeURIComponent(teamModal)}`} 
+                className="mt-6 flex items-center justify-center w-full py-3.5 bg-[#ffea00] text-black font-bold font-mono text-xs uppercase tracking-widest rounded-xl hover:bg-[#cca100] transition-colors shadow-lg shadow-[#ffea00]/20"
+              >
+                Esplora Rosa Completa →
+              </a>
             </div>
-
           </div>
-        </div>
+        </div>,
+        document.body // ← Questo fa la magia! Trasferisce l'HTML fuori dalla "gabbia"
       )}
+
       {/* CLASSIFICA MARCATORI */}
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
         <h2 className="text-xl md:text-2xl font-display font-bold text-white uppercase tracking-wider text-center">🏆 Classifica Marcatori</h2>

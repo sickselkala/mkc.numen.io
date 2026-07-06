@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/MkcLayout.astro';
+import NewsPage from '../components/react/NewsPage';
+---
+
+<Layout title="News e Comunicati | Matenano Kings Cup">
+  <main class="min-h-screen bg-black text-white pt-20">
+
+    <NewsPage client:load />
+
+  </main>
+</Layout>
