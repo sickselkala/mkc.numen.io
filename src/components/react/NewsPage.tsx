@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// Tipologie e struttura delle news
 type NewsItem = {
   id: number;
   date: string;
@@ -10,16 +9,21 @@ type NewsItem = {
   tags: string[];
 };
 
-// Database simulato delle news
-// Sostituisci il vecchio array NEWS_DATA nel file NewsPage.tsx con questo:
-
 const NEWS_DATA: NewsItem[] = [
-    {
-    id: 8, // Assicurati che l'ID sia univoco
+  {
+    id: 9,
+    date: '09/07/2026',
+    title: 'COMUNICATO UFFICIALE: FINALI ANTICIPATE AD OGGI!',
+    type: 'comunicato',
+    content: 'ATTENZIONE: Il Direttivo comunica ufficialmente che la serata conclusiva della Matenano Kings Cup 2026, originariamente programmata per domani 10/07, è stata anticipata ad OGGI, GIOVEDÌ 09/07.\n\nGli orari delle sfide restano invariati: alle 21:00 la Finale per il 3°/4° Posto e alle 22:00 la Finalissima. Vi aspettiamo numerosi al Campo L. Paolucci per chiudere in bellezza questa fantastica edizione!',
+    tags: ['Comunicazione Ufficiale', 'Finale', 'Variazione Calendario']
+  },
+  {
+    id: 8,
     date: '06/07/2026',
     title: 'AGGIORNAMENTO METEO: SERATA CONFERMATA!',
     type: 'meteo',
-    content: 'Confermato il regolare svolgimento delle partite in programma per la serata odierna (06/07). Le condizioni meteo sono migliorate e il campo è perfettamente agibile. Tutti gli atleti sono invitati a presentarsi al Campo L. Paolucci per le sfide in programma.s',
+    content: 'Confermato il regolare svolgimento delle partite in programma per la serata odierna (06/07). Le condizioni meteo sono migliorate e il campo è perfettamente agibile. Tutti gli atleti sono invitati a presentarsi al Campo L. Paolucci per le sfide in programma.',
     tags: ['Meteo', 'Comunicazione Ufficiale', 'Standby']
   },
   {
@@ -92,7 +96,6 @@ export default function NewsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 space-y-12 pb-12 pt-6 overflow-hidden">
       
-      {/* HEADER */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#cca100] via-[#ffea00] to-[#cca100] drop-shadow-[0_4px_15px_rgba(255,234,0,0.2)]">
           Ultime Notizie
@@ -102,7 +105,6 @@ export default function NewsPage() {
         </p>
       </div>
 
-      {/* FILTRI */}
       <div className="flex flex-wrap justify-center gap-3">
         {(['tutte', 'comunicato', 'riepilogo'] as const).map((f) => (
           <button 
@@ -119,11 +121,9 @@ export default function NewsPage() {
         ))}
       </div>
 
-      {/* LISTA NEWS */}
       <div className="space-y-6">
         {filteredNews.map((news) => {
           
-          // Styling condizionale in base al tipo di news
           const isMeteo = news.type === 'meteo';
           const isComunicato = news.type === 'comunicato';
           
@@ -151,7 +151,6 @@ export default function NewsPage() {
             >
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6">
                 
-                {/* Data e Icona (Sinistra su Desktop) */}
                 <div className="flex flex-row md:flex-col items-center md:items-start gap-4 md:w-32 shrink-0">
                   <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center text-2xl md:text-3xl shadow-inner">
                     {icon}
@@ -166,7 +165,6 @@ export default function NewsPage() {
                   </div>
                 </div>
 
-                {/* Contenuto News */}
                 <div className="flex-1 space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 mb-1">

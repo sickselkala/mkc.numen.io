@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // Aggiunto per aggirare il blocco dello scroll
+import { createPortal } from 'react-dom';
 import Papa from 'papaparse';
 
-// Link reali presi da "Pubblica sul web"
 const URL_GIRONI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=0&single=true&output=csv'; 
 const URL_PARTITE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1934217749&single=true&output=csv';
 const URL_MARCATORI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1767066330&single=true&output=csv';
 
-// Coordinate Campo Sportivo L. Paolucci - Santa Vittoria in Matenano (FM)
 const LAT = 43.0189;
 const LON = 13.4958;
 
@@ -21,9 +19,8 @@ const SQUADRE_UFFICIALI = [
   'Club'
 ];
 
-// Date separate per logica
 const DATE_GIRONI = ['28/06', '29/06', '30/06', '01/07', '02/07', '03/07', '06/07', '07/07'];
-const DATE_FINALI = ['08/07', '10/07'];
+const DATE_FINALI = ['08/07', '09/07', '10/07'];
 
 const COLOR_MAP: Record<string, string> = {
   'Godo Glimt': 'rgba(204, 161, 0, 0.15)',        
@@ -53,7 +50,6 @@ function getLogoPath(squadraNome: string): string {
   return `/assets/${nomePulito}.png`;
 }
 
-// FIX CRITICO: Forza ogni nome inserito nei CSV ad essere identico al nome ufficiale
 function getOfficialTeamName(rawName: string): string {
   if (!rawName) return '';
   const cleaned = rawName.trim();
@@ -101,13 +97,14 @@ function CountdownTimer() {
 }
 
 export default function TournamentRounds() {
-  const [isMounted, setIsMounted] = useState(false); // Necessario per il Portal
+  const [isMounted, setIsMounted] = useState(false); 
   const [loading, setLoading] = useState(true);
   const [classifica, setClassifica] = useState<any[]>([]);
   const [partite, setPartite] = useState<any[]>([]);
   const [marcatori, setMarcatori] = useState<any[]>([]);
   const [squadreInCampo, setSquadreInCampo] = useState<Set<string>>(new Set());
   const [teamModal, setTeamModal] = useState<string | null>(null);
+  const [showDateAlert, setShowDateAlert] = useState(true); 
   
   const [meteoData, setMeteoData] = useState<Record<string, { temp: number; emoji: string }>>({});
   const [toggledMatches, setToggledMatches] = useState<Record<string, boolean>>({});
@@ -117,20 +114,18 @@ export default function TournamentRounds() {
   const [isClassificaOpen, setIsClassificaOpen] = useState(false);
   const [isArchivioOpen, setIsArchivioOpen] = useState(false);
 
-  // Assicura che la UI di base monti lato client (per Next/Astro SSR)
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Blocca rigorosamente lo scroll del corpo della pagina (body) quando il modale è aperto
   useEffect(() => {
-    if (teamModal) {
+    if (teamModal || showDateAlert) {
       document.body.style.setProperty('overflow', 'hidden', 'important');
     } else {
       document.body.style.removeProperty('overflow');
     }
     return () => { document.body.style.removeProperty('overflow'); };
-  }, [teamModal]);
+  }, [teamModal, showDateAlert]);
 
   const fetchMeteo = async () => {
     try {
@@ -172,7 +167,6 @@ export default function TournamentRounds() {
         for (const row of rawPartite) {
           if (!row[0] || !row[2] || !row[3]) continue;
           const dataMatch = row[0].toString().trim(); 
-          // Utilizziamo la funzione di normalizzazione per garantire uniformità nei nomi
           const sA = getOfficialTeamName(row[2].toString());
           const sB = getOfficialTeamName(row[3].toString());
           
@@ -262,7 +256,10 @@ export default function TournamentRounds() {
     const isGiocata = p.golA !== null && p.golB !== null;
     const hasDetails = Boolean(p.dettagliA || p.dettagliB || p.doppiA || p.doppiB || p.mvp);
     const matchId = `${p.dataMatch}-${p.sA}-${p.sB}-${uniqueKey}`;
-    const isExpanded = isGiocata && (toggledMatches[matchId] !== undefined ? toggledMatches[matchId] : hasDetails);
+    
+    // Semifinali chiuse di default
+    const defaultExpanded = p.dataMatch === '08/07' ? false : hasDetails;
+    const isExpanded = isGiocata && (toggledMatches[matchId] !== undefined ? toggledMatches[matchId] : defaultExpanded);
     
     const isLive = p.stato === 'LIVE';
     const isHT = p.stato === 'HT';
@@ -273,7 +270,7 @@ export default function TournamentRounds() {
     let faseEtichetta = forcedLabel || 'Girone Unico';
     if (!forcedLabel) {
       if (p.dataMatch === '08/07') faseEtichetta = 'Semifinale';
-      if (p.dataMatch === '10/07') {
+      if (p.dataMatch === '10/07' || p.dataMatch === '09/07') {
         faseEtichetta = p.orario.startsWith('21') ? 'Finale 3°/4° Posto' : 'Finale';
       }
     }
@@ -466,7 +463,6 @@ export default function TournamentRounds() {
     );
   };
 
-  // Logica "I Migliori" Calcolata Esattamente
   let topScorerTeam: any = null;
   let topMvpTeam: { nome: string, count: number } | null = null;
 
@@ -500,7 +496,7 @@ export default function TournamentRounds() {
   if (loading) return <div className="text-center text-zinc-400 py-12 font-mono animate-pulse">Sincronizzazione...</div>;
 
   const partiteSemifinali = partite.filter(p => p.dataMatch === '08/07');
-  const partiteFinali = partite.filter(p => p.dataMatch === '10/07');
+  const partiteFinali = partite.filter(p => p.dataMatch === '10/07' || p.dataMatch === '09/07');
   
   let match34 = null;
   let match12 = null;
@@ -543,7 +539,7 @@ export default function TournamentRounds() {
 
         <div className="space-y-6 md:space-y-8">
           <h2 className="text-xl md:text-2xl font-display font-bold text-white uppercase tracking-wider pl-2 border-l-4 border-[#ffea00]">
-            Finali <span className="text-zinc-500 text-sm ml-2">10/07</span>
+            Finali <span className="text-zinc-500 text-sm ml-2">09/07</span>
           </h2>
           
           <div className="flex flex-col gap-8 md:gap-12">
@@ -553,7 +549,7 @@ export default function TournamentRounds() {
                </div>
                {match12 
                   ? renderRealMatch(match12, 'fin-12', 'Finale', true) 
-                  : renderPlaceholder('10/07', { fase: 'Finale', orario: '22:00' }, 1, true)
+                  : renderPlaceholder('09/07', { fase: 'Finale', orario: '22:00' }, 1, true)
                }
             </div>
 
@@ -561,7 +557,7 @@ export default function TournamentRounds() {
                <div className="w-0.5 h-6 md:h-10 bg-gradient-to-b from-white/10 to-transparent absolute -top-6 md:-top-10"></div>
                {match34 
                   ? renderRealMatch(match34, 'fin-34', 'Finale 3°/4° Posto', false) 
-                  : renderPlaceholder('10/07', { fase: 'Finale 3°/4° Posto', orario: '21:00' }, 0, false)
+                  : renderPlaceholder('09/07', { fase: 'Finale 3°/4° Posto', orario: '21:00' }, 0, false)
                }
             </div>
           </div>
@@ -699,7 +695,6 @@ export default function TournamentRounds() {
         </div>
       </div>
 
-      {/* PORTAL MAGICO: Questo inietta il modale nel body sfuggendo a tutte le limitazioni CSS */}
       {isMounted && teamModal && createPortal(
         <div 
           className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
@@ -762,14 +757,12 @@ export default function TournamentRounds() {
                 </div>
               ))}
 
-              {/* SEZIONE VISIVA "GIOCATORI MIGLIORI" */}
               <div className="w-full mt-4 bg-zinc-800/30 border border-white/10 rounded-2xl p-4 shrink-0">
                   <h4 className="text-[10px] text-[#ffea00] font-mono uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
                     <span>⭐</span> Giocatori Migliori <span>⭐</span>
                   </h4>
                   
                   <div className="space-y-2">
-                    {/* Top Scorer */}
                     {topScorerTeam ? (
                       <div className="flex justify-between items-center bg-black/50 px-3 py-2.5 rounded-xl border border-white/5">
                         <div className="flex items-center gap-2.5 overflow-hidden">
@@ -790,7 +783,6 @@ export default function TournamentRounds() {
                       </div>
                     )}
 
-                    {/* Miglior MVP */}
                     {topMvpTeam ? (
                       <div className="flex justify-between items-center bg-black/50 px-3 py-2.5 rounded-xl border border-white/5">
                         <div className="flex items-center gap-2.5 overflow-hidden">
@@ -822,10 +814,53 @@ export default function TournamentRounds() {
             </div>
           </div>
         </div>,
-        document.body // <-- INIEZIONE DIRETTA NEL BODY
+        document.body
       )}
 
-      {/* CLASSIFICA MARCATORI */}
+      {isMounted && showDateAlert && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          style={{ 
+            animation: 'fadeInModal 0.2s ease-out forwards',
+            touchAction: 'none'
+          }}
+          onClick={() => setShowDateAlert(false)}
+        >
+          <div 
+            className="bg-zinc-900 border-2 border-red-500/80 rounded-3xl p-6 md:p-8 w-[92%] max-w-md flex flex-col text-center relative shadow-[0_0_50px_rgba(239,68,68,0.25)]"
+            style={{ 
+              animation: 'popUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              touchAction: 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowDateAlert(false)} 
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white text-xl w-8 h-8 flex items-center justify-center font-mono transition-colors z-20 bg-black/50 rounded-full border border-white/5"
+            >
+              ✕
+            </button>
+            
+            <span className="text-5xl md:text-6xl mb-4">⚠️</span>
+            <h3 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-wider mb-2">
+              Attenzione!
+            </h3>
+            <p className="text-zinc-300 font-mono text-sm md:text-base leading-relaxed mb-6">
+              La data delle <strong className="text-red-400">FINALI</strong> è stata anticipata a <br/>
+              <strong className="text-red-400 text-lg bg-red-500/10 px-2 py-1 rounded mt-2 inline-block border border-red-500/30">OGGI 09/07</strong>
+            </p>
+            
+            <button 
+              onClick={() => setShowDateAlert(false)} 
+              className="w-full py-3.5 bg-red-500 text-white font-bold font-mono text-xs uppercase tracking-widest rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 shrink-0"
+            >
+              Ho capito
+            </button>
+          </div>
+        </div>,
+        document.body 
+      )}
+
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
         <h2 className="text-xl md:text-2xl font-display font-bold text-white uppercase tracking-wider text-center">🏆 Classifica Marcatori</h2>
         <div className="grid gap-2.5 md:gap-3">
