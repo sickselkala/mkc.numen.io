@@ -11,6 +11,14 @@ type NewsItem = {
 
 const NEWS_DATA: NewsItem[] = [
   {
+    id: 10,
+    date: '09/07/2026',
+    title: 'BAR IGLOO CAMPIONE! LA MKC 2026 SI CHIUDE IN GRANDE',
+    type: 'riepilogo',
+    content: 'La Matenano Kings Cup 2026 ha il suo Re: il Bar Igloo! In una Finalissima spettacolare i nuovi campioni hanno superato 9-4 l\'Edil Pennello Fc, al termine di una cavalcata straordinaria iniziata nel Girone Unico.\n\nIl podio completo: Bar Igloo campione, Edil Pennello Fc secondo e Sold Out terzo (nella finale per il 3°/4° posto il Club è stato battuto 3-0 a tavolino). Giampaolo Paolucci (Edil Pennello Fc) si laurea capocannoniere dell\'edizione con 17 reti.\n\nUn enorme grazie a tutte le squadre, allo staff, alla Pro Loco e al pubblico che ha riempito il Campo L. Paolucci: appuntamento alla prossima edizione!',
+    tags: ['Finale', 'Campioni', 'Bar Igloo', 'Riepilogo']
+  },
+  {
     id: 9,
     date: '09/07/2026',
     title: 'COMUNICATO UFFICIALE: FINALI ANTICIPATE AD OGGI!',

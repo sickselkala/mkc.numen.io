@@ -6,9 +6,6 @@ const URL_GIRONI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo9
 const URL_PARTITE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1934217749&single=true&output=csv';
 const URL_MARCATORI = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwR6Zoknvo93RrtMTQM7oRHeCUfmPFAmLt7scaK88WG1_vcj9top8QITU9jTtAon1i5ali9bcMhyJH/pub?gid=1767066330&single=true&output=csv';
 
-const LAT = 43.0189;
-const LON = 13.4958;
-
 const SQUADRE_UFFICIALI = [
   'Edil Pennello Fc',
   'Godo Glimt',
@@ -31,16 +28,6 @@ const COLOR_MAP: Record<string, string> = {
   'Edil Pennello Fc': 'rgba(3, 105, 161, 0.25)',  
   'Club': 'rgba(63, 63, 70, 0.4)',                
 };
-
-function getWeatherEmoji(code: number, isDay: boolean): string {
-  if (code === 0) return isDay ? '☀️' : '🌙';
-  if (code === 1 || code === 2) return isDay ? '🌤️' : '☁️';
-  if (code === 3) return '☁️';
-  if (code === 45 || code === 48) return '🌫️';
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
-  if ([95, 96, 99].includes(code)) return '⛈️';
-  return '☁️';
-}
 
 function getLogoPath(squadraNome: string): string {
   if (!squadraNome) return '/assets/logo-big.jpg';
@@ -69,33 +56,6 @@ async function fetchCsvData(url: string): Promise<any[]> {
   }
 }
 
-function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState('');
-  useEffect(() => {
-    const targetDate = new Date('2026-06-28T20:30:00').getTime();
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-      if (difference <= 0) {
-        setTimeLeft('TORNEO IN CORSO!');
-        clearInterval(interval);
-        return;
-      }
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      setTimeLeft(`START TRA: ${days > 0 ? `${days}g ` : ''}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  return (
-    <div className="inline-block bg-[#ffea00] text-black font-mono text-xs font-black tracking-widest uppercase px-5 py-2 rounded-xl shadow-lg border border-[#ffea00]">
-      ⏳ {timeLeft}
-    </div>
-  );
-}
-
 export default function TournamentRounds() {
   const [isMounted, setIsMounted] = useState(false); 
   const [loading, setLoading] = useState(true);
@@ -104,9 +64,7 @@ export default function TournamentRounds() {
   const [marcatori, setMarcatori] = useState<any[]>([]);
   const [squadreInCampo, setSquadreInCampo] = useState<Set<string>>(new Set());
   const [teamModal, setTeamModal] = useState<string | null>(null);
-  const [showDateAlert, setShowDateAlert] = useState(true); 
   
-  const [meteoData, setMeteoData] = useState<Record<string, { temp: number; emoji: string }>>({});
   const [toggledMatches, setToggledMatches] = useState<Record<string, boolean>>({});
   const [showAllScorers, setShowAllScorers] = useState(false);
 
@@ -119,35 +77,13 @@ export default function TournamentRounds() {
   }, []);
 
   useEffect(() => {
-    if (teamModal || showDateAlert) {
+    if (teamModal) {
       document.body.style.setProperty('overflow', 'hidden', 'important');
     } else {
       document.body.style.removeProperty('overflow');
     }
     return () => { document.body.style.removeProperty('overflow'); };
-  }, [teamModal, showDateAlert]);
-
-  const fetchMeteo = async () => {
-    try {
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,weather_code,is_day&timezone=Europe%2FRome&past_days=14`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const parsedMeteo: Record<string, { temp: number; emoji: string }> = {};
-      data.hourly.time.forEach((timeStr: string, idx: number) => {
-        const [, month, dayAndHour] = timeStr.split('-');
-        const [day, hourStr] = dayAndHour.split('T');
-        const hour = parseInt(hourStr.split(':')[0], 10);
-        const key = `${day}/${month}-${hour}`;
-        const temp = Math.round(data.hourly.temperature_2m[idx]);
-        const code = data.hourly.weather_code[idx];
-        const isDay = data.hourly.is_day[idx] === 1;
-        parsedMeteo[key] = { temp, emoji: getWeatherEmoji(code, isDay) };
-      });
-      setMeteoData(parsedMeteo);
-    } catch (err) {
-      console.error("Errore recupero meteo:", err);
-    }
-  };
+  }, [teamModal]);
 
   const loadAllData = async (isSilentRefresh = false) => {
     if (!isSilentRefresh) setLoading(true);
@@ -239,18 +175,7 @@ export default function TournamentRounds() {
 
   useEffect(() => {
     loadAllData(false);
-    fetchMeteo(); 
-    const intervalData = setInterval(() => { loadAllData(true); }, 45000); 
-    const intervalMeteo = setInterval(() => { fetchMeteo(); }, 3600000);
-    return () => { clearInterval(intervalData); clearInterval(intervalMeteo); };
   }, []);
-
-  const getMatchMeteo = (dataMatch: string, orario: string) => {
-    if (!orario || orario === 'Da definire') return null;
-    const hour = parseInt(orario.split(':')[0], 10);
-    if (isNaN(hour)) return null;
-    return meteoData[`${dataMatch}-${hour}`] || null;
-  };
 
   const renderRealMatch = (p: any, uniqueKey: string, forcedLabel?: string, isGrandFinal: boolean = false) => {
     const isGiocata = p.golA !== null && p.golB !== null;
@@ -265,7 +190,8 @@ export default function TournamentRounds() {
     const isHT = p.stato === 'HT';
     const isTavolino = p.isTavolino;
     const isMatchActive = isLive || isHT;
-    const matchWeather = getMatchMeteo(p.dataMatch, p.orario);
+    // Le finali sono state disputate il 09/07 (comunicato ufficiale): normalizziamo l'etichetta data.
+    const displayDate = p.dataMatch === '10/07' ? '09/07' : p.dataMatch;
 
     let faseEtichetta = forcedLabel || 'Girone Unico';
     if (!forcedLabel) {
@@ -291,13 +217,8 @@ export default function TournamentRounds() {
         ${isLive ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : isHT ? 'border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]' : ''}`}
       >
         <div className={`flex justify-between items-center font-mono tracking-wider uppercase mb-4 ${isGrandFinal ? 'text-[10px] sm:text-xs md:text-sm text-[#ffea00]' : 'text-[10px] text-zinc-500'}`}>
-          <span className="font-bold">{faseEtichetta} • {p.dataMatch}</span>
+          <span className="font-bold">{faseEtichetta} • {displayDate}</span>
           <div className="flex items-center gap-1.5">
-            {matchWeather && (
-              <span className={`font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border ${isGrandFinal ? 'bg-[#ffea00]/10 text-white border-[#ffea00]/20' : 'bg-white/5 text-zinc-300 border-white/5'}`}>
-                <span>{matchWeather.emoji}</span><span>{matchWeather.temp}°C</span>
-              </span>
-            )}
             {isGiocata && !isMatchActive && (
               <span className={`text-[9px] px-1.5 py-0.5 rounded tracking-normal ${isGrandFinal ? 'text-zinc-300 bg-white/10' : 'text-zinc-400 bg-white/5'}`}>
                 {isExpanded ? '▲' : '▼'}
@@ -425,18 +346,12 @@ export default function TournamentRounds() {
   };
 
   const renderPlaceholder = (data: string, match: any, idx: number, isGrandFinal: boolean = false) => {
-    const matchWeather = getMatchMeteo(data, match.orario);
     return (
       <div key={`ph-${idx}`} className={`flex flex-col rounded-2xl border-dashed h-fit backdrop-blur-sm w-full 
         ${isGrandFinal ? 'p-5 sm:p-8 md:p-10 border-2 border-[#ffea00]/40 shadow-[0_0_30px_rgba(255,234,0,0.1)] bg-zinc-900/60' : 'p-5 bg-zinc-900/30 border border-white/10'}`}>
         <div className={`flex justify-between items-center font-mono tracking-wider uppercase mb-4 md:mb-6 ${isGrandFinal ? 'text-[10px] sm:text-xs md:text-sm text-[#ffea00]' : 'text-[10px] text-zinc-500'}`}>
           <span className="font-bold">{match.fase} • {data}</span>
           <div className="flex items-center gap-2">
-            {matchWeather && (
-              <span className="font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border bg-white/5 text-zinc-300 border-white/5">
-                <span>{matchWeather.emoji}</span><span>{matchWeather.temp}°C</span>
-              </span>
-            )}
             <span className="hidden sm:inline">L. Paolucci</span>
           </div>
         </div>
@@ -518,9 +433,11 @@ export default function TournamentRounds() {
     <div className="max-w-7xl mx-auto px-2 md:px-4 space-y-16 pb-12 overflow-hidden">
       
       <div className="text-center space-y-6 pt-6">
-        <CountdownTimer />
+        <div className="inline-flex items-center gap-2 bg-[#ffea00] text-black font-mono text-xs font-black tracking-widest uppercase px-5 py-2 rounded-xl shadow-lg border border-[#ffea00]">
+          🏆 Torneo Concluso · Edizione 2026
+        </div>
         <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#cca100] via-[#ffea00] to-[#cca100] drop-shadow-[0_4px_15px_rgba(255,234,0,0.2)]">
-          Fase Finale
+          Risultati e Classifiche
         </h1>
       </div>
 
@@ -815,50 +732,6 @@ export default function TournamentRounds() {
           </div>
         </div>,
         document.body
-      )}
-
-      {isMounted && showDateAlert && createPortal(
-        <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          style={{ 
-            animation: 'fadeInModal 0.2s ease-out forwards',
-            touchAction: 'none'
-          }}
-          onClick={() => setShowDateAlert(false)}
-        >
-          <div 
-            className="bg-zinc-900 border-2 border-red-500/80 rounded-3xl p-6 md:p-8 w-[92%] max-w-md flex flex-col text-center relative shadow-[0_0_50px_rgba(239,68,68,0.25)]"
-            style={{ 
-              animation: 'popUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              touchAction: 'auto'
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <button 
-              onClick={() => setShowDateAlert(false)} 
-              className="absolute top-4 right-4 text-zinc-500 hover:text-white text-xl w-8 h-8 flex items-center justify-center font-mono transition-colors z-20 bg-black/50 rounded-full border border-white/5"
-            >
-              ✕
-            </button>
-            
-            <span className="text-5xl md:text-6xl mb-4">⚠️</span>
-            <h3 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-wider mb-2">
-              Attenzione!
-            </h3>
-            <p className="text-zinc-300 font-mono text-sm md:text-base leading-relaxed mb-6">
-              La data delle <strong className="text-red-400">FINALI</strong> è stata anticipata a <br/>
-              <strong className="text-red-400 text-lg bg-red-500/10 px-2 py-1 rounded mt-2 inline-block border border-red-500/30">OGGI 09/07</strong>
-            </p>
-            
-            <button 
-              onClick={() => setShowDateAlert(false)} 
-              className="w-full py-3.5 bg-red-500 text-white font-bold font-mono text-xs uppercase tracking-widest rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 shrink-0"
-            >
-              Ho capito
-            </button>
-          </div>
-        </div>,
-        document.body 
       )}
 
       <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">

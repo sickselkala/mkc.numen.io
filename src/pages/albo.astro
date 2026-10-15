@@ -67,7 +67,7 @@ import MkcLayout from '../layouts/MkcLayout.astro';
       {/* INTESTAZIONE PAGINA */}
       <div class="text-center space-y-4 pt-4">
         <span class="font-mono text-xs uppercase tracking-widest text-[#ffea00]/80 font-bold bg-[#ffea00]/10 px-3 py-1 rounded-full inline-block">
-          Edizione 2025
+          La Storia del Torneo
         </span>
         <h1 class="text-regale block leading-none">
           <span class="block text-4xl md:text-6xl text-shine-silver-gold tracking-[0.05em] font-bold pb-2">
@@ -77,20 +77,179 @@ import MkcLayout from '../layouts/MkcLayout.astro';
         <div class="w-24 h-1 bg-[#ffea00] mx-auto mt-4"></div>
       </div>
 
-      {/* --- SEZIONE PODIO SQUADRE --- */}
+      {/* ======================= EDIZIONE 2026 ======================= */}
       <div class="space-y-12">
+        <div class="text-center space-y-3">
+          <span class="font-mono text-xs uppercase tracking-widest text-[#ffea00] font-bold bg-[#ffea00]/10 px-3 py-1 rounded-full inline-block border border-[#ffea00]/20">
+            2ª Edizione
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-black uppercase tracking-wider text-white">
+            Matenano Kings Cup 2026
+          </h2>
+          <p class="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-[#d4af37] font-bold pt-1">
+            Il Podio delle Squadre
+          </p>
+        </div>
+
+        {/* STRUTTURA PODIO 2026: Ordinata visivamente per importanza (2° - 1° - 3°) su Desktop */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end max-w-5xl mx-auto pt-6">
+          
+          {/* 2° CLASSIFICATO: EDIL PENNELLO FC */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center space-y-4 order-2 md:order-1 hover:border-white/30 transition-all relative overflow-hidden group min-h-[240px] flex flex-col justify-center">
+            <img 
+              src="/assets/edilpennellofc.png" 
+              alt="" 
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 object-contain opacity-[0.14] mix-blend-luminosity pointer-events-none group-hover:scale-110 transition-transform duration-700 z-0"
+            />
+            
+            <div class="relative z-10 space-y-4">
+              <div class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-white/70 uppercase tracking-widest">
+                2° Posto
+              </div>
+              <h3 class="text-3xl font-display font-black uppercase tracking-wider text-white">
+                Edil Pennello Fc
+              </h3>
+              <p class="text-xs font-mono text-white/50 uppercase tracking-wider">Medaglia d'Argento</p>
+            </div>
+          </div>
+
+          {/* 1° CLASSIFICATO - CAMPIONE: BAR IGLOO */}
+          <div class="bg-black/50 backdrop-blur-xl border-2 border-[#ffea00]/50 rounded-2xl p-6 md:p-8 text-center order-1 md:order-2 shadow-[0_0_50px_rgba(255,234,0,0.25)] relative transform md:-translate-y-4 hover:border-[#ffea00] transition-all group overflow-hidden min-h-[260px] md:min-h-[300px] flex flex-col justify-center">
+            
+            <img 
+              src="/assets/barigloo.png" 
+              alt="" 
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 object-contain opacity-30 pointer-events-none group-hover:opacity-45 group-hover:rotate-3 transition-all duration-700 z-0"
+            />
+
+            {/* Corona Badge */}
+            <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#ffea00] text-black text-xs font-mono font-black uppercase tracking-widest px-5 py-1.5 rounded-full shadow-lg z-20 animate-pulse">
+               Campioni 
+            </div>
+
+            <div class="space-y-3 pt-4 relative z-10">
+              <h3 class="text-5xl md:text-6xl font-display font-black uppercase tracking-widest text-shine-silver-gold pb-1 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                Bar Igloo
+              </h3>
+              <div class="w-12 h-[2px] bg-[#ffea00]/60 mx-auto"></div>
+              <p class="text-xs font-mono uppercase tracking-[0.2em] text-[#ffea00] font-bold">
+                Vincitore Seconda Edizione
+              </p>
+            </div>
+          </div>
+
+          {/* 3° CLASSIFICATO: SOLD OUT */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center space-y-4 order-3 hover:border-white/30 transition-all relative overflow-hidden group min-h-[240px] flex flex-col justify-center">
+            <img 
+              src="/assets/soldout.png" 
+              alt="" 
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 object-contain opacity-[0.12] mix-blend-luminosity pointer-events-none group-hover:scale-110 transition-transform duration-700 z-0"
+            />
+
+            <div class="relative z-10 space-y-4">
+              <div class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-white/70 uppercase tracking-widest">
+                3° Posto
+              </div>
+              <h3 class="text-3xl font-display font-black uppercase tracking-wider text-white">
+                Sold Out
+              </h3>
+              <p class="text-xs font-mono text-white/50 uppercase tracking-wider">Medaglia di Bronzo</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* --- PREMI INDIVIDUALI 2026 --- */}
+      <div class="space-y-10">
         <div class="text-center">
           <h2 class="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-[#d4af37] font-bold">
-            Il Podio delle Squadre
+            Premi Individuali 2026
           </h2>
         </div>
 
-        {/* STRUTTURA PODIO: Ordinata visivamente per importanza (2° - 1° - 3°) su Desktop */}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+          
+          {/* CAPOCANNONIERE */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 text-center space-y-4 hover:border-[#ffea00]/40 transition-all shadow-xl group">
+            <div class="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center mx-auto border border-white/10 group-hover:border-[#ffea00]/30 transition-all duration-300 p-2">
+              <img src="/assets/edilpennellofc.png" alt="Edil Pennello Fc Logo" class="w-full h-full object-contain" />
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-[10px] font-mono uppercase tracking-widest text-white/50">Capocannoniere</h3>
+              <p class="text-base font-display font-black uppercase text-[#ffea00] tracking-wide line-clamp-1">
+                Giampaolo Paolucci
+              </p>
+              <p class="text-xs font-mono text-white/70">Edil Pennello Fc</p>
+            </div>
+          </div>
+
+          {/* MIGLIOR GIOCATORE */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 text-center space-y-4 hover:border-[#ffea00]/40 transition-all shadow-xl group">
+            <div class="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center mx-auto border border-white/10 group-hover:border-[#ffea00]/30 transition-all duration-300 p-2">
+              <img src="/assets/barigloo.png" alt="Bar Igloo Logo" class="w-full h-full object-contain" />
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-[10px] font-mono uppercase tracking-widest text-white/50">Miglior Giocatore</h3>
+              <p class="text-base font-display font-black uppercase text-[#ffea00] tracking-wide line-clamp-1">
+                Samuele Tidei
+              </p>
+              <p class="text-xs font-mono text-white/70">Bar Igloo</p>
+            </div>
+          </div>
+
+          {/* MIGLIOR PORTIERE */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 text-center space-y-4 hover:border-[#ffea00]/40 transition-all shadow-xl group">
+            <div class="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center mx-auto border border-white/10 group-hover:border-[#ffea00]/30 transition-all duration-300 p-2">
+              <img src="/assets/edilpennellofc.png" alt="Edil Pennello Fc Logo" class="w-full h-full object-contain" />
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-[10px] font-mono uppercase tracking-widest text-white/50">Miglior Portiere</h3>
+              <p class="text-base font-display font-black uppercase text-[#ffea00] tracking-wide line-clamp-1">
+                Mattia Funari
+              </p>
+              <p class="text-xs font-mono text-white/70">Edil Pennello Fc</p>
+            </div>
+          </div>
+
+          {/* MIGLIOR PRESIDENTE */}
+          <div class="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 text-center space-y-4 hover:border-[#ffea00]/40 transition-all shadow-xl group">
+            <div class="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center mx-auto border border-white/10 group-hover:border-[#ffea00]/30 transition-all duration-300 p-2">
+              <img src="/assets/edilpennellofc.png" alt="Edil Pennello Fc Logo" class="w-full h-full object-contain" />
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-[10px] font-mono uppercase tracking-widest text-white/50">Miglior Presidente</h3>
+              <p class="text-base font-display font-black uppercase text-[#ffea00] tracking-wide line-clamp-1">
+                Zakaria Wakil
+              </p>
+              <p class="text-xs font-mono text-white/70">Edil Pennello Fc</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <hr class="border-white/10 max-w-xl mx-auto" />
+
+      {/* ======================= ARCHIVIO EDIZIONE 2025 ======================= */}
+      <div class="space-y-12">
+        <div class="text-center space-y-3">
+          <span class="font-mono text-xs uppercase tracking-widest text-white/60 font-bold bg-white/5 px-3 py-1 rounded-full inline-block border border-white/10">
+            1ª Edizione
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-black uppercase tracking-wider text-white/80">
+            Matenano Kings Cup 2025
+          </h2>
+          <p class="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-[#d4af37]/80 font-bold pt-1">
+            Il Podio delle Squadre
+          </p>
+        </div>
+
+        {/* STRUTTURA PODIO 2025: Ordinata visivamente per importanza (2° - 1° - 3°) su Desktop */}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end max-w-5xl mx-auto pt-6">
           
           {/* 2° CLASSIFICATO: SIGMA */}
           <div class="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center space-y-4 order-2 md:order-1 hover:border-white/30 transition-all relative overflow-hidden group min-h-[240px] flex flex-col justify-center">
-            {/* Logo di Sfondo Centrato e Tagliato - Ingrandito per bilanciamento ottico */}
             <img 
               src="/assets/sigma.png" 
               alt="" 
@@ -111,19 +270,16 @@ import MkcLayout from '../layouts/MkcLayout.astro';
           {/* 1° CLASSIFICATO - CAMPIONE: SOLD OUT */}
           <div class="bg-black/50 backdrop-blur-xl border-2 border-[#ffea00]/50 rounded-2xl p-6 md:p-8 text-center order-1 md:order-2 shadow-[0_0_50px_rgba(255,234,0,0.25)] relative transform md:-translate-y-4 hover:border-[#ffea00] transition-all group overflow-hidden min-h-[260px] md:min-h-[300px] flex flex-col justify-center">
             
-            {/* Logo di Sfondo Potenziato: Colori vividi e opacità aumentata */}
             <img 
               src="/assets/soldout.png" 
               alt="" 
               class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 object-contain opacity-30 pointer-events-none group-hover:opacity-45 group-hover:rotate-3 transition-all duration-700 z-0"
             />
 
-            {/* Corona Badge */}
-            <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#ffea00] text-black text-xs font-mono font-black uppercase tracking-widest px-5 py-1.5 rounded-full shadow-lg z-20 animate-pulse">
+            <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#ffea00] text-black text-xs font-mono font-black uppercase tracking-widest px-5 py-1.5 rounded-full shadow-lg z-20">
                Campioni 
             </div>
 
-            {/* Testo Principale con animazione oro cangiante uguale al titolo */}
             <div class="space-y-3 pt-4 relative z-10">
               <h3 class="text-5xl md:text-6xl font-display font-black uppercase tracking-widest text-shine-silver-gold pb-1 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                 Sold Out
@@ -137,7 +293,6 @@ import MkcLayout from '../layouts/MkcLayout.astro';
 
           {/* 3° CLASSIFICATO: PUNTO PIZZA */}
           <div class="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center space-y-4 order-3 hover:border-white/30 transition-all relative overflow-hidden group min-h-[240px] flex flex-col justify-center">
-            {/* Logo di Sfondo Centrato e Tagliato - Ridimensionato per bilanciamento ottico con Sigma */}
             <img 
               src="/assets/puntopizza.png" 
               alt="" 
@@ -158,13 +313,11 @@ import MkcLayout from '../layouts/MkcLayout.astro';
         </div>
       </div>
 
-      <hr class="border-white/5 max-w-xl mx-auto" />
-
-      {/* --- SEZIONE PREMI PERSONALI --- */}
+      {/* --- PREMI INDIVIDUALI 2025 --- */}
       <div class="space-y-10">
         <div class="text-center">
           <h2 class="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-[#d4af37] font-bold">
-            Premi Individuali
+            Premi Individuali 2025
           </h2>
         </div>
 
