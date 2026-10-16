@@ -1,0 +1,153 @@
+---
+interface Props {
+  edizione: number;
+  anno: number;
+  data: string | null;
+}
+const { edizione, anno, data } = Astro.props;
+---
+
+<section id="coppa-scroll" class="coppa relative bg-[#030302] text-white" style="--p:0" data-date={data ?? ''}>
+  <div class="coppa-sticky sticky top-0 h-[100svh] overflow-hidden">
+    {/* Griglia 30px (stessa delle altre pagine) */}
+    <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,rgba(255,234,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,234,0,0.03)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+
+    {/* Coppa: alone + due layer sovrapposti */}
+    <div class="coppa-stage absolute inset-x-0 top-20 bottom-0 flex items-center justify-center pointer-events-none">
+      <div class="coppa-alone absolute w-[120vmin] h-[120vmin] rounded-full"></div>
+      <div class="coppa-wrap relative h-[62svh] md:h-[68svh] aspect-[1792/2400]">
+        <img src="/assets/coppa-spenta.png" alt="" aria-hidden="true" class="coppa-spenta absolute inset-0 w-full h-full object-contain" decoding="async" />
+        <img src="/assets/coppa-oro.png" alt="Coppa della Matenano Kings Cup" class="coppa-oro absolute inset-0 w-full h-full object-contain" decoding="async" />
+      </div>
+    </div>
+
+    {/* Velo per leggibilità del testo */}
+    <div class="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#030302] via-[#030302]/70 to-transparent pointer-events-none"></div>
+
+    {/* Scene di testo */}
+    <div class="absolute inset-x-0 bottom-0 px-6 pb-10 md:pb-16 text-center">
+      <div class="relative max-w-3xl mx-auto min-h-[16rem] md:min-h-[18rem]">
+        <div class="coppa-scena" data-scena="0">
+          <span class="font-mono text-xs uppercase tracking-[0.3em] text-[#d4af37]">Matenano Kings Cup</span>
+          <h1 class="font-display font-black uppercase text-4xl md:text-6xl tracking-wider mt-3">Una sola coppa.</h1>
+          <p class="font-mono text-xs text-zinc-500 mt-6 uppercase tracking-widest animate-pulse">Scorri ↓</p>
+        </div>
+        <div class="coppa-scena" data-scena="1">
+          <h2 class="font-display font-black uppercase text-3xl md:text-5xl tracking-wider">Si riaccende la sfida</h2>
+          <p class="font-mono text-sm text-zinc-300 mt-4 leading-relaxed">Squadre, rivalità e colpi di scena: il campo di Santa Vittoria in Matenano si prepara a un nuovo capitolo.</p>
+        </div>
+        <div class="coppa-scena" data-scena="2">
+          <h2 class="font-display font-black uppercase text-3xl md:text-5xl tracking-wider text-[#ffea00]">Chi vuole essere il Re?</h2>
+          <p class="font-mono text-sm text-zinc-300 mt-4 leading-relaxed">Numerosi sfidanti, una sola corona. L'edizione {anno} sta per cominciare.</p>
+        </div>
+        <div class="coppa-scena" data-scena="3">
+          <img src="/assets/mkc27.png" alt={`MKC ${anno}`} class="mx-auto w-48 md:w-64 h-auto" style="mix-blend-mode:screen" />
+          <p class="font-mono text-xs uppercase tracking-[0.3em] text-[#d4af37] mt-2">{edizione}ª edizione · {anno}</p>
+          <p id="coppa-countdown" class="font-display font-black text-3xl md:text-5xl text-[#ffea00] mt-3 tabular-nums">
+            {data ? '' : 'Data in arrivo'}
+          </p>
+          <a href="#esplora" class="inline-flex items-center gap-3 mt-6 px-8 py-4 bg-[#ffea00] text-black font-display font-black uppercase text-sm tracking-widest rounded-2xl hover:bg-white transition-colors">
+            Continua a esplorare <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .coppa { height: 450svh; }
+  /* R: avanzamento della luce, completato all'80% dello scroll */
+  .coppa-stage { --r: clamp(0, calc(var(--p) * 1.25), 1); }
+  .coppa-wrap {
+    transform: scale(calc(0.85 + var(--r) * 0.2));
+    will-change: transform;
+  }
+  .coppa-spenta {
+    filter: grayscale(1) brightness(0.65);
+    mix-blend-mode: screen;
+  }
+  .coppa-oro {
+    mix-blend-mode: screen;
+    -webkit-mask-image: linear-gradient(to top, #000 calc(var(--r) * 130% - 30%), transparent calc(var(--r) * 130%));
+    mask-image: linear-gradient(to top, #000 calc(var(--r) * 130% - 30%), transparent calc(var(--r) * 130%));
+  }
+  .coppa-alone {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.35) 0%, rgba(212, 175, 55, 0.1) 35%, transparent 65%);
+    opacity: calc(var(--r) * 0.9);
+    transform: scale(calc(0.6 + var(--r) * 0.5));
+    will-change: transform, opacity;
+  }
+  .coppa-scena {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .coppa[data-scena="0"] [data-scena="0"],
+  .coppa[data-scena="1"] [data-scena="1"],
+  .coppa[data-scena="2"] [data-scena="2"],
+  .coppa[data-scena="3"] [data-scena="3"] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .coppa-scena { transition: none; }
+  }
+</style>
+
+<script>
+  const root = document.getElementById('coppa-scroll') as HTMLElement | null;
+  if (root) {
+    const SCENE_STARTS = [0, 0.25, 0.5, 0.78];
+    let ticking = false;
+    let scena = -1;
+
+    const update = () => {
+      ticking = false;
+      const rect = root.getBoundingClientRect();
+      const max = root.offsetHeight - window.innerHeight;
+      const p = Math.min(1, Math.max(0, -rect.top / max));
+      root.style.setProperty('--p', p.toFixed(4));
+      let s = 0;
+      for (let i = 0; i < SCENE_STARTS.length; i++) if (p >= SCENE_STARTS[i]) s = i;
+      if (s !== scena) {
+        scena = s;
+        root.dataset.scena = String(s);
+      }
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+
+    // Countdown (attivo solo se la data è valorizzata in src/data/edizione.ts)
+    const el = document.getElementById('coppa-countdown');
+    const target = root.dataset.date ? new Date(root.dataset.date).getTime() : NaN;
+    if (el && !Number.isNaN(target)) {
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const tick = () => {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          el.textContent = 'Si gioca!';
+          return;
+        }
+        const d = Math.floor(diff / 864e5);
+        const h = Math.floor((diff % 864e5) / 36e5);
+        const m = Math.floor((diff % 36e5) / 6e4);
+        const s = Math.floor((diff % 6e4) / 1e3);
+        el.textContent = `${d}g ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+      };
+      tick();
+      setInterval(tick, 1000);
+    }
+  }
+</script>
