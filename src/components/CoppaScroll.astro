@@ -64,11 +64,10 @@ const { edizione, anno, data } = Astro.props;
     will-change: transform;
   }
   .coppa-spenta {
-    filter: grayscale(1) brightness(0.65);
-    mix-blend-mode: screen;
+    filter: grayscale(0.55) brightness(0.5) drop-shadow(0 0 22px rgba(0, 0, 0, 0.5));
   }
   .coppa-oro {
-    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 28px rgba(255, 215, 0, 0.45));
     -webkit-mask-image: linear-gradient(to top, #000 calc(var(--r) * 130% - 30%), transparent calc(var(--r) * 130%));
     mask-image: linear-gradient(to top, #000 calc(var(--r) * 130% - 30%), transparent calc(var(--r) * 130%));
   }
